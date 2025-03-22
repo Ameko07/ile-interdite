@@ -1,9 +1,12 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Ile {
+
+    // l'ile est une grille de taille 12/12
     int nbJoueur = 4;
-    final int width = 20 , height = 20;
+    final int width = 12 , height = 12;
     Zone[][] grille ;
 
     int nbEliport = 2;
@@ -41,5 +44,15 @@ public class Ile {
         grille [rand.nextInt(width)][rand.nextInt(height)] = zoneFeu;
 
 
+
+
     }
+
+    public Zone[][] getGrille() {
+        return grille;
+    }
+
+
+
+
 }

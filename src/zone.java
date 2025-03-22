@@ -4,10 +4,12 @@
 abstract class Zone {
     // attribut
     Etat etat;
+    Clef cle ;
 
     //constructor
     public Zone(){
         etat = Etat.normal;
+        cle = null;
     }
     //methodes
     public Etat getEtat(){
@@ -17,6 +19,20 @@ abstract class Zone {
      * permet de modifier l'etat de la zone **/
     public void changeState(Etat e){
             etat = e;
+    }
+
+    /**setter addCle
+     * @param c : Clef
+     * permet d'ajouter une clf dans la zone surtout pour l'initialisation **/
+    public void addCle(Clef c){
+        this.cle = c;
+
+    }
+
+    /**setter deleteClef
+     * permet de supprimer une clé , utile pour la récupération dans la zone **/
+    void deleteClef(){
+        this.cle = null;
     }
 
     public enum Etat{normal, inonde , submerge}
@@ -34,6 +50,11 @@ class ZoneOridinaire extends Zone{
         super();
     }
 
+    @Override
+    public String toString() {
+        return "Zone Ordinaire{" +
+                " Etat = "+ this.etat +" }" ;
+    }
 }
 
 /**classe ZoneEliport
@@ -54,6 +75,14 @@ class ZoneEliport extends Zone{
      * @return nbJoeur : int **/
     public int getNbJoueur() {
         return nbJoueur;
+    }
+
+    @Override
+    public String toString() {
+        return "ZoneEliport{" +
+                "Etat= " + this.etat +
+                "nbJoueur=" + nbJoueur +
+                '}';
     }
 }
 
@@ -95,4 +124,16 @@ class ZoneElement extends Zone{
     public boolean thereIsArtefact() {
         return artefact;
     }
+
+    @Override
+    public String toString() {
+        return "ZoneElement{" +
+                "element=" + element +
+                ", art=" + art.element +
+                ", artefact=" + artefact +
+                '}';
+    }
 }
+
+
+
