@@ -4,9 +4,10 @@ import java.util.Random;
 
 public class Ile {
 
-    // l'ile est une grille de taille 12/12
+    // l'ile est une grille de taille 6/6
+    // attribut
     int nbJoueur = 4;
-    final int width = 12 , height = 12;
+    final int width = 6 , height = 6;
     Zone[][] grille ;
 
     int nbEliport = 2;
@@ -21,7 +22,7 @@ public class Ile {
         // on remplis d'abord avec que des Zone Ordinaire
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                 grille[i][j] = new ZoneOridinaire();
+                 grille[i][j] = new ZoneOrdinaire();
             }
 
         }
@@ -44,6 +45,25 @@ public class Ile {
         grille [rand.nextInt(width)][rand.nextInt(height)] = zoneFeu;
 
 
+        // initialisation des Eliports
+        // il y en a 2
+        for(int i =0; i<nbEliport; i++){
+            ZoneEliport zEli = new ZoneEliport();
+
+            //choix au hasard des coordonnées
+            int j = rand.nextInt(width);
+            int k = rand.nextInt(height);
+
+            //on ne change que zone ordinaire
+            while (! (grille[j][k] instanceof ZoneOrdinaire)){
+                j = rand.nextInt(width);
+                k = rand.nextInt(height);
+            }
+
+            grille[j][k] = zEli;
+        }
+
+
 
 
     }
@@ -52,7 +72,15 @@ public class Ile {
         return grille;
     }
 
+    public int getWidth() {
+        return width;
+    }
 
+    public int getHeight() {
+        return height;
+    }
 
-
+    public Zone getZone(int i, int j){
+        return grille[i][j];
+    }
 }

@@ -43,10 +43,10 @@ abstract class Zone {
 
 /**Classe ZoneOrdinqire
  * une zone normale avec un etat normale **/
-class ZoneOridinaire extends Zone{
+class ZoneOrdinaire extends Zone{
 
     // constructor
-    public ZoneOridinaire(){
+    public ZoneOrdinaire(){
         super();
     }
 
