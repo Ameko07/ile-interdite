@@ -19,6 +19,6 @@ class Artefact {
 
     @Override
     public String toString() {
-        return "Artefact de type element";
+        return "Artefact de type element"+ element; // j'ai ajouté element ici
     }
 }

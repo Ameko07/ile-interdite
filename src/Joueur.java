@@ -9,14 +9,14 @@ public class Joueur {
     ArrayList<Clef> clefs; // peux avoir plusieurs clés
     ArrayList<Artefact> art; // peut avoir plusieurs artefacte
 
-    public Joueur(){
+    public Joueur(int maxX, int maxY) {
         Random rand = new Random();
-        this.x = rand.nextInt(13);//13 exclu
-        this.y = rand.nextInt(13);
+        this.x = rand.nextInt(maxX); // maxX = 6 → donc index 0 à 5
+        this.y = rand.nextInt(maxY);
         clefs = new ArrayList<>();
-        art = new  ArrayList<>();
-
+        art = new ArrayList<>();
     }
+
 
     /**methode getter addClef
      * @param cle : Clef
@@ -78,6 +78,11 @@ public class Joueur {
                 " nombre clefs = " + nbClefs() +
                  " nombre artefact = " + nbArts() ;
     }
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
 
 
 }

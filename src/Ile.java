@@ -4,69 +4,73 @@ import java.util.Random;
 
 public class Ile {
 
-    // l'ile est une grille de taille 6/6
-    // attribut
-    int nbJoueur = 4;
-    final int width = 6 , height = 6;
-    Zone[][] grille ;
+    // Constantes de taille
+    final int width = 6, height = 6;
 
-    int nbEliport = 2;
+    // Grille de zones
+    private Zone[][] grille;
 
-    public Ile (){
+    // Nombre de zones héliport
+    private int nbEliport = 2;
+
+    public Ile() {
         Random rand = new Random();
-        this.grille = new Zone[width][height] ;
+        grille = new Zone[width][height];
 
-
-
-
-        // on remplis d'abord avec que des Zone Ordinaire
+        // === 1. Initialisation : toutes les zones sont ordinaires ===
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                 grille[i][j] = new ZoneOrdinaire();
+                grille[i][j] = new ZoneOrdinaire();
+                grille[i][j].setPosition(i, j); // ➕ On définit leur position
             }
-
         }
 
-        // ajout des zone avec artefact
-        // EAU
-        ZoneElement zoneEau = new ZoneElement(new Artefact(Artefact.Element.EAU).getType());
-        grille [rand.nextInt(width)][rand.nextInt(height)] = zoneEau;
+        // === 2. Ajout des zones élémentaires (artefacts) ===
 
-        // AIR
-        ZoneElement zoneAir = new ZoneElement(new Artefact(Artefact.Element.AIR).getType());
-        grille [rand.nextInt(width)][rand.nextInt(height)] = zoneAir;
+        // ⚠️ On évite d’écraser une case déjà utilisée
+        placerZoneElement(new Artefact(Artefact.Element.EAU), rand);
+        placerZoneElement(new Artefact(Artefact.Element.AIR), rand);
+        placerZoneElement(new Artefact(Artefact.Element.TERRE), rand);
+        placerZoneElement(new Artefact(Artefact.Element.FEU), rand);
 
-        //TERRE
-        ZoneElement zoneTerre = new ZoneElement(new Artefact(Artefact.Element.TERRE).getType());
-        grille [rand.nextInt(width)][rand.nextInt(height)] = zoneTerre;
+        // === 3. Ajout de 2 zones Héliport ===
+        for (int i = 0; i < nbEliport; i++) {
+            int x = rand.nextInt(width);
+            int y = rand.nextInt(height);
 
-        //FEU
-        ZoneElement zoneFeu = new ZoneElement(new Artefact(Artefact.Element.FEU).getType());
-        grille [rand.nextInt(width)][rand.nextInt(height)] = zoneFeu;
+            // On cherche une zone ordinaire uniquement
+            while (!(grille[x][y] instanceof ZoneOrdinaire)) {
+                x = rand.nextInt(width);
+                y = rand.nextInt(height);
+            }
 
-
-        // initialisation des Eliports
-        // il y en a 2
-        for(int i =0; i<nbEliport; i++){
             ZoneEliport zEli = new ZoneEliport();
+            zEli.setPosition(x, y);
+            grille[x][y] = zEli;
+        }
+    }
 
-            //choix au hasard des coordonnées
-            int j = rand.nextInt(width);
-            int k = rand.nextInt(height);
+    /**
+     * Méthode utilitaire pour placer une ZoneElement aléatoirement,
+     * sans écraser une autre zone spéciale
+     */
+    private void placerZoneElement(Artefact artefact, Random rand) {
+        int x = rand.nextInt(width);
+        int y = rand.nextInt(height);
 
-            //on ne change que zone ordinaire
-            while (! (grille[j][k] instanceof ZoneOrdinaire)){
-                j = rand.nextInt(width);
-                k = rand.nextInt(height);
-            }
-
-            grille[j][k] = zEli;
+        // Ne pas remplacer une zone déjà spéciale
+        while (!(grille[x][y] instanceof ZoneOrdinaire)) {
+            x = rand.nextInt(width);
+            y = rand.nextInt(height);
         }
 
-
-
-
+        ZoneElement zoneElem = new ZoneElement(artefact.getType());
+        zoneElem.setPosition(x, y);
+        zoneElem.setArt(artefact); // Si tu veux associer l'artefact visuellement
+        grille[x][y] = zoneElem;
     }
+
+    // === GETTERS ===
 
     public Zone[][] getGrille() {
         return grille;
@@ -80,7 +84,8 @@ public class Ile {
         return height;
     }
 
-    public Zone getZone(int i, int j){
+    public Zone getZone(int i, int j) {
         return grille[i][j];
     }
 }
+

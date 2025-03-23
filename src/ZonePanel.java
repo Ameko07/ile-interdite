@@ -5,6 +5,10 @@ import java.awt.*;
 
 public class ZonePanel extends JPanel {
     private Zone zone;
+    private Joueur joueur;
+    public void setJoueur(Joueur j) {
+        this.joueur = j;
+    }
 
 
     public ZonePanel(Zone z) {
@@ -25,44 +29,39 @@ public class ZonePanel extends JPanel {
      * Change la couleur des zone en fonction de leur type et de leur Etat**/
     private void updateColor() {
         Zone.Etat etat = zone.getEtat();
+        Color baseColor = Color.LIGHT_GRAY;
 
-        Color BaseColor = null;
-
-        //choix de la couleur d'une zone element
         if (zone instanceof ZoneElement) {
-            Artefact.Element element = ((ZoneElement) zone).getElement();
-
-            // chaque element a sa propre couleur
-            switch (element) {
-                case AIR :BaseColor = Color.GRAY; break;
-                case EAU : BaseColor =Color.BLUE;break;
-                case TERRE :BaseColor =Color.decode("#966526");break;
-                case FEU :BaseColor =Color.RED;break;
-                default : BaseColor  = Color.WHITE;break;
-
+            switch (((ZoneElement) zone).getElement()) {
+                case AIR -> baseColor = Color.GRAY;
+                case EAU -> baseColor = Color.BLUE;
+                case TERRE -> baseColor = new Color(150, 101, 38);
+                case FEU -> baseColor = Color.RED;
             }
         } else if (zone instanceof ZoneOrdinaire) {
-            BaseColor =Color.YELLOW;
-
-
+            baseColor = Color.YELLOW;
         } else if (zone instanceof ZoneEliport) {
-            BaseColor =Color.BLACK;
-
+            baseColor = Color.BLACK;
         }
 
-        //Couleur selon l'etat
-        switch (etat){
-            case inonde : setBackground(new Color(BaseColor.getRed(), BaseColor.getGreen(), BaseColor.getBlue(), 100));
-            break;
-            case submerge: setBackground(new Color(BaseColor.getRed(), BaseColor.getGreen(), BaseColor.getBlue(), 150));
-                break;
-            case normal:setBackground(BaseColor);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + etat);
+        // Couleur d'arrière-plan selon l'état
+        switch (etat) {
+            case inonde -> setBackground(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 100));
+            case submerge -> setBackground(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 50));
+            default -> setBackground(baseColor);
         }
 
+        // Si le joueur est sur cette zone → mettre une bordure ou un indicateur
+        if (joueur != null && joueur.getX() == zone.getX() && joueur.getY() == zone.getY()) {
+            setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
+        } else {
+            setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
+        }
+    }
 
+    public void refresh() {
+        updateColor();
+        repaint();
     }
 
 }
