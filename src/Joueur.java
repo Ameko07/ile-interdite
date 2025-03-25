@@ -8,6 +8,15 @@ public class Joueur {
 
     ArrayList<Clef> clefs; // peux avoir plusieurs clés
     ArrayList<Artefact> art; // peut avoir plusieurs artefacte
+    private int id;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return this.id;
+    }
 
     public Joueur(int maxX, int maxY) {
         Random rand = new Random();

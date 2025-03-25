@@ -11,6 +11,9 @@ public class ZonePanel extends JPanel {
     // attribut du texte d'etat de zone
     private JLabel etatTxt =  new JLabel("", SwingConstants.CENTER);
 
+    private Color[] couleursJoueurs = {Color.GREEN, Color.MAGENTA, Color.ORANGE, Color.CYAN};
+
+
 
 
     public ZonePanel(Zone z) {
@@ -72,10 +75,11 @@ public class ZonePanel extends JPanel {
 
         // Si le joueur est sur cette zone → mettre une bordure ou un indicateur
         if (joueur != null && joueur.getX() == zone.getX() && joueur.getY() == zone.getY()) {
-            setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
+            setBorder(BorderFactory.createLineBorder(couleursJoueurs[joueur.getId()], 3));
         } else {
             setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
         }
+
     }
 
     /**setter setJoueur

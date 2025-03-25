@@ -22,6 +22,11 @@ public class Fenetre extends JFrame {
     private Ile ile;
     private Joueur joueur;
     private int actionsRestantes = 3;
+    private List<Joueur> joueurs = new ArrayList<>();
+    private int joueurActif = 0;
+    private JLabel joueurLabel; // affichage du joueur courant
+    private Color[] couleursJoueurs = {Color.GREEN, Color.MAGENTA, Color.ORANGE, Color.CYAN};
+
 
 
     // Constructeur de la fenêtre
@@ -40,7 +45,8 @@ public class Fenetre extends JFrame {
         bouton.setPreferredSize(new Dimension(150, 50));
 
         // Ajout d’un listener sur le bouton
-        bouton.addActionListener(e -> inonderTroisZones());
+        bouton.addActionListener(e -> finDeTour());
+
 
         // Panel pour le bouton (à droite)
         JPanel panelButton = new JPanel();
@@ -94,7 +100,7 @@ public class Fenetre extends JFrame {
 
 
 
-        // 🌟 BONUS VISUEL 🌟
+        //  BONUS VISUEL
 
         Font fontBouton = new Font("Arial", Font.BOLD, 20); // Police moderne et lisible
         Color couleurFond = new Color(220, 220, 220);       // Gris clair
@@ -114,9 +120,21 @@ public class Fenetre extends JFrame {
         ile = new Ile();
         // Création d'un joueur avec des coordonnées valides
         // Création du joueur dans une zone non submergée
-        do {
-            joueur = new Joueur(ile.getWidth(), ile.getHeight());
-        } while (ile.getZone(joueur.getX(), joueur.getY()).getEtat() == Zone.Etat.submerge);
+        int nbJoueurs = 4; // ou 2, 3 selon ce que tu veux
+        for (int i = 0; i < nbJoueurs; i++) {
+            Joueur j = new Joueur(ile.getWidth(), ile.getHeight());
+            while (ile.getZone(j.getX(), j.getY()).getEtat() == Zone.Etat.submerge) {
+                j = new Joueur(ile.getWidth(), ile.getHeight());
+            }
+            j.setId(i);
+            joueurs.add(j);
+        }
+        joueur = joueurs.get(0); // joueur 1 au début
+
+
+        joueurLabel = new JLabel("🎮 Tour du joueur 1", SwingConstants.CENTER);
+        joueurLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        add(joueurLabel, BorderLayout.NORTH);
 
 
         // Panel principal pour afficher la grille
@@ -279,6 +297,23 @@ public class Fenetre extends JFrame {
             return false;
         }
     }
+
+    private void finDeTour() {
+        inonderTroisZones();
+
+        joueurActif = (joueurActif + 1) % joueurs.size();
+        joueur = joueurs.get(joueurActif);
+
+        // Mettre à jour tous les panneaux
+        for (ZonePanel zP : zoneMap.values()) {
+            zP.setJoueur(joueur);
+            zP.refresh();
+        }
+
+        actionsRestantes = 3;
+        joueurLabel.setText("🎮 Tour du joueur " + (joueurActif + 1));
+    }
+
 
 
 
