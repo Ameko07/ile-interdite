@@ -11,10 +11,13 @@ abstract class Zone {
         this.x = x;
         this.y = y;
     }
+    /**getter getX
+     * @return this.x : int **/
     public int getX() {
         return x;
     }
-
+    /**getter getY
+     * @return this.y : int **/
     public int getY() {
         return y;
     }
@@ -50,6 +53,19 @@ abstract class Zone {
     }
 
     public enum Etat{normal, inonde , submerge}
+
+    /**Methode toString pour afficher les états des zones**/
+    public String toString(Etat t){
+        switch (t){
+            case normal : return "normal";
+            case inonde: return "inondé" ;
+            case submerge:return "submergé";
+            default: return "erreur d'état ";
+        }
+    }
+
+
+
 }
 
 
@@ -119,6 +135,12 @@ class ZoneElement extends Zone{
        artefact = false; // ne contient rien par defaut
     }
 
+    /**getter getArt
+     * @return this.art : Artefact**/
+    public Artefact getArt() {
+        return art;
+    }
+
     /**setter setArt
      * @param a : Artefact
      * ajoute un nouvel artefacte**/
@@ -126,6 +148,15 @@ class ZoneElement extends Zone{
         // on ajoute l'artefact
         this.art = a;
         this.artefact = true;
+    }
+
+    /**setter deletArt
+     * supprime l'artefqct de la zone
+     * utiliser pour recupérer un artefact**/
+    public void deletArt(){
+        //on supprime l'artefact
+        this.art = null;
+        this.artefact = false;
     }
 
     /**getter de l'elemnent de la zone**/
