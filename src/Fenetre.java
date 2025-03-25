@@ -21,6 +21,8 @@ public class Fenetre extends JFrame {
     // L’île, avec ses zones
     private Ile ile;
     private Joueur joueur;
+    private int actionsRestantes = 3;
+
 
     // Constructeur de la fenêtre
     public Fenetre() {
@@ -196,12 +198,16 @@ public class Fenetre extends JFrame {
                 panel.refresh(); // Redessine la couleur selon le nouvel état
             }
         }
+        actionsRestantes = 3;
+        System.out.println("🌀 Nouveau tour, actions réinitialisées !");
+
     }
 
 
     /**Methode assecherZone
      * change l'etat de la zone à l'emplacement du joueur en normal si celui est inondé **/
     public void assecherZone(){
+        if (!consommerAction()) return;
         int xJ = this.joueur.getX();
         int yJ = this.joueur.getY();
         Zone zJ = this.ile.getZone(xJ,yJ);
@@ -219,6 +225,7 @@ public class Fenetre extends JFrame {
      * récupère l'artefact à l'emplacement
      * supprime l'artefact de la zone et l"ajoute à l'inventaire du joueur **/
     public void recupArtJoueur (){
+        if (!consommerAction()) return;
         int xJ = this.joueur.getX();
         int yJ = this.joueur.getY();
         Zone zJ = this.ile.getZone(xJ,yJ);
@@ -237,6 +244,7 @@ public class Fenetre extends JFrame {
 
     // ⬅️ Appelée avec dx/dy = déplacement horizontal/vertical
     private void deplacerJoueur(int dx, int dy) {
+        if (!consommerAction()) return;
         int newX = joueur.getX() + dx;
         int newY = joueur.getY() + dy;
 
@@ -260,6 +268,20 @@ public class Fenetre extends JFrame {
             System.out.println("⛔ Hors de la grille !");
         }
     }
+
+    private boolean consommerAction() {
+        if (actionsRestantes > 0) {
+            actionsRestantes--;
+            System.out.println("✅ Action effectuée ! Il reste : " + actionsRestantes);
+            return true;
+        } else {
+            System.out.println("⛔ Plus d'actions disponibles ce tour !");
+            return false;
+        }
+    }
+
+
+
 
 
 
