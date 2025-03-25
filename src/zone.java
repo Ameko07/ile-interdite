@@ -64,6 +64,8 @@ abstract class Zone {
         }
     }
 
+
+
 }
 
 
@@ -133,6 +135,12 @@ class ZoneElement extends Zone{
        artefact = false; // ne contient rien par defaut
     }
 
+    /**getter getArt
+     * @return this.art : Artefact**/
+    public Artefact getArt() {
+        return art;
+    }
+
     /**setter setArt
      * @param a : Artefact
      * ajoute un nouvel artefacte**/
@@ -140,6 +148,15 @@ class ZoneElement extends Zone{
         // on ajoute l'artefact
         this.art = a;
         this.artefact = true;
+    }
+
+    /**setter deletArt
+     * supprime l'artefqct de la zone
+     * utiliser pour recupérer un artefact**/
+    public void deletArt(){
+        //on supprime l'artefact
+        this.art = null;
+        this.artefact = false;
     }
 
     /**getter de l'elemnent de la zone**/

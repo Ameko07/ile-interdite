@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
-/**c'est une classe qui va représenter une donnée sur la fenêtre **/
+/**c'est une classe qui va représenter une zone donnée sur la fenêtre **/
 
 public class ZonePanel extends JPanel {
     //atribut

@@ -87,5 +87,29 @@ public class Ile {
     public Zone getZone(int i, int j) {
         return grille[i][j];
     }
+
+    /***setEtatZone
+     * @param i : int
+     * @param j : int
+     * @param e : Zone.Etat
+     *change l'etat de zone defini */
+
+    public void setEtatZone (int i, int j, Zone.Etat e){
+        Zone z = getZone(i,j);
+        z.changeState(e);
+        this.grille[i][j] = z;
+    }
+
+    /**methode deletArtZone
+     * @param i : int
+     * @param j : int
+     * *supprime l'artefact de la zone à l'emplacement i,j*/
+    public void deletArtZone(int i, int j){
+        Zone z = getZone(i,j);
+        if (z instanceof ZoneElement){
+            ((ZoneElement) z).deletArt();
+        }
+        this.grille[i][j] = z;
+    }
 }
 

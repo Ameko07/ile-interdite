@@ -1,13 +1,9 @@
 // Imports Swing (interface graphique)
 import javax.swing.*;
-import java.awt.Font;
+import java.awt.*;
 
 
-// Imports graphiques spécifiques (au lieu de import java.awt.*;)
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Color;
+// Imports graphiques spécifiques (au lieu d'import java.awt.*;)
 
 // Imports des collections (List, Map, etc.)
 import java.util.List;
@@ -40,7 +36,6 @@ public class Fenetre extends JFrame {
         // === Création du bouton "Fin de tour" ===
         JButton bouton = new JButton("Fin de tour");
         bouton.setPreferredSize(new Dimension(150, 50));
-
 
         // Ajout d’un listener sur le bouton
         bouton.addActionListener(e -> inonderTroisZones());
@@ -75,6 +70,28 @@ public class Fenetre extends JFrame {
         bas.addActionListener(e -> deplacerJoueur(1, 0));       // ⬇️ bas
         gauche.addActionListener(e -> deplacerJoueur(0, -1));   // ⬅️ gauche
         droite.addActionListener(e -> deplacerJoueur(0, 1));    // ➡️ droite
+
+        //nouveau panel pour les boutons d'action
+        JPanel panelAction = new JPanel(new FlowLayout(FlowLayout.LEFT)); // Aligner à gauche
+
+
+
+        // Ajout des boutons d'assechement , récupérer artefact et chercher clé
+        JButton assecher = new JButton("Assécher");
+        assecher.setPreferredSize(new Dimension(150, 50));
+        assecher.addActionListener(e -> assecherZone());
+        panelAction.add(assecher);
+
+        JButton recupArtB = new JButton("Récupérer artefact");
+        recupArtB.setPreferredSize(new Dimension(150, 50));
+        recupArtB.addActionListener(e->recupArtJoueur());
+        panelAction.add(recupArtB);
+
+        add(panelAction,BorderLayout.SOUTH);
+
+
+
+
         // 🌟 BONUS VISUEL 🌟
 
         Font fontBouton = new Font("Arial", Font.BOLD, 20); // Police moderne et lisible
@@ -180,6 +197,44 @@ public class Fenetre extends JFrame {
             }
         }
     }
+
+
+    /**Methode assecherZone
+     * change l'etat de la zone à l'emplacement du joueur en normal si celui est inondé **/
+    public void assecherZone(){
+        int xJ = this.joueur.getX();
+        int yJ = this.joueur.getY();
+        Zone zJ = this.ile.getZone(xJ,yJ);
+        if (zJ.getEtat() == Zone.Etat.inonde){
+            this.ile.setEtatZone(xJ,yJ, Zone.Etat.normal);
+        }else if (zJ.getEtat() == Zone.Etat.submerge){
+            System.out.println("Impossible assèchement de la Zone");
+        }else {
+            // on ne fait rien
+        }
+        ZonePanel zP = zoneMap.get(zJ);
+        zP.refresh();
+    }
+    /**methode recupArtJoueur
+     * récupère l'artefact à l'emplacement
+     * supprime l'artefact de la zone et l"ajoute à l'inventaire du joueur **/
+    public void recupArtJoueur (){
+        int xJ = this.joueur.getX();
+        int yJ = this.joueur.getY();
+        Zone zJ = this.ile.getZone(xJ,yJ);
+        if (zJ instanceof ZoneElement){
+            Artefact a = ((ZoneElement) zJ).getArt();
+            if (a == null ){
+                throw new NullPointerException ("il n'y a pas d'artefact ici");
+
+            }else {
+                this.joueur.addArt(a);
+                this.ile.deletArtZone(xJ,yJ);
+            }
+        }
+    }
+
+
     // ⬅️ Appelée avec dx/dy = déplacement horizontal/vertical
     private void deplacerJoueur(int dx, int dy) {
         int newX = joueur.getX() + dx;
