@@ -4,11 +4,13 @@ import java.awt.*;
 /**c'est une classe qui va représenter une donnée sur la fenêtre **/
 
 public class ZonePanel extends JPanel {
+    //atribut
     private Zone zone;
     private Joueur joueur;
-    public void setJoueur(Joueur j) {
-        this.joueur = j;
-    }
+
+    // attribut du texte d'etat de zone
+    private JLabel etatTxt =  new JLabel("", SwingConstants.CENTER);
+
 
 
     public ZonePanel(Zone z) {
@@ -21,6 +23,13 @@ public class ZonePanel extends JPanel {
         // Ajout du MouseListener à  JPanel
         addMouseListener(mouseListener);
 
+        //initialisation du label
+        String e = zone.toString(Zone.Etat.normal);
+
+         this.etatTxt = new JLabel(e, SwingConstants.CENTER);
+        setLayout(new BorderLayout()); // Permet d'ajouter le label au centre
+        add(etatTxt, BorderLayout.CENTER);
+
 
 
     }
@@ -28,27 +37,37 @@ public class ZonePanel extends JPanel {
     /**methode updateColor
      * Change la couleur des zone en fonction de leur type et de leur Etat**/
     private void updateColor() {
+        // on récupère l'etat de la zone
         Zone.Etat etat = zone.getEtat();
-        Color baseColor = Color.LIGHT_GRAY;
 
+
+        //couleur par type
         if (zone instanceof ZoneElement) {
             switch (((ZoneElement) zone).getElement()) {
-                case AIR -> baseColor = Color.GRAY;
-                case EAU -> baseColor = Color.BLUE;
-                case TERRE -> baseColor = new Color(150, 101, 38);
-                case FEU -> baseColor = Color.RED;
+                case AIR -> setBackground(Color.GRAY);
+                case EAU -> setBackground(Color.BLUE);
+                case TERRE -> setBackground (new Color(150, 101, 38));
+                case FEU -> setBackground(Color.RED);
             }
         } else if (zone instanceof ZoneOrdinaire) {
-            baseColor = Color.YELLOW;
+            setBackground(Color.YELLOW);
         } else if (zone instanceof ZoneEliport) {
-            baseColor = Color.BLACK;
+            setBackground(Color.BLACK);
         }
 
-        // Couleur d'arrière-plan selon l'état
+        // label modifier par rapport à l'état de la zone
         switch (etat) {
-            case inonde -> setBackground(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 100));
-            case submerge -> setBackground(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 50));
-            default -> setBackground(baseColor);
+            case inonde -> etatTxt.setText(zone.toString(etat));
+            case submerge -> etatTxt.setText(zone.toString(etat));
+            default -> etatTxt.setText(zone.toString(etat));
+        }
+        // mise en couleur du texte selon l'état
+        if (etat == Zone.Etat.submerge) {
+            etatTxt.setForeground(Color.RED);
+        } else if (etat == Zone.Etat.inonde) {
+            etatTxt.setForeground(Color.BLUE);
+        } else {
+            etatTxt.setForeground(Color.BLACK);
         }
 
         // Si le joueur est sur cette zone → mettre une bordure ou un indicateur
@@ -59,6 +78,15 @@ public class ZonePanel extends JPanel {
         }
     }
 
+    /**setter setJoueur
+     * @param j : Joueur
+     * Modifie l'attribut du joueur **/
+    public void setJoueur(Joueur j) {
+        this.joueur = j;
+    }
+
+    /**methode refresh
+     * met à jour les couleur et les attributs des zones**/
     public void refresh() {
         updateColor();
         repaint();

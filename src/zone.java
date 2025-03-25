@@ -11,10 +11,13 @@ abstract class Zone {
         this.x = x;
         this.y = y;
     }
+    /**getter getX
+     * @return this.x : int **/
     public int getX() {
         return x;
     }
-
+    /**getter getY
+     * @return this.y : int **/
     public int getY() {
         return y;
     }
@@ -50,6 +53,17 @@ abstract class Zone {
     }
 
     public enum Etat{normal, inonde , submerge}
+
+    /**Methode toString pour afficher les états des zones**/
+    public String toString(Etat t){
+        switch (t){
+            case normal : return "normal";
+            case inonde: return "inondé" ;
+            case submerge:return "submergé";
+            default: return "erreur d'état ";
+        }
+    }
+
 }
 
 
