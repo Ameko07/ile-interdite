@@ -31,6 +31,34 @@ public class Fenetre extends JFrame {
 
     // Constructeur de la fenêtre
     public Fenetre() {
+
+        // === Initialisation de l’île ===
+        ile = new Ile();
+        // Création d'un joueur avec des coordonnées valides
+        // Création du joueur dans une zone non submergée
+        int nbJoueurs = 4; // ou 2, 3 selon ce que tu veux
+        for (int i = 0; i < nbJoueurs; i++) {
+            Joueur j = new Joueur(ile.getWidth(), ile.getHeight());
+            while (ile.getZone(j.getX(), j.getY()).getEtat() == Zone.Etat.submerge) {
+                j = new Joueur(ile.getWidth(), ile.getHeight());
+            }
+            j.setId(i);
+            joueurs.add(j);
+        }
+        joueur = joueurs.get(0); // joueur 1 au début
+
+
+        joueurLabel = new JLabel("🎮 Tour du joueur 1", SwingConstants.CENTER);
+        joueurLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        add(joueurLabel, BorderLayout.NORTH);
+
+
+        // Panel principal pour afficher la grille
+        JPanel gridPanel = new JPanel();
+        gridPanel.setLayout(new GridLayout(ile.getWidth(), ile.getHeight()));
+        // initialisation du controleur de joueur
+        ControleurJoueur cJ = new ControleurJoueur(this.ile, this.joueur,zoneMap,joueurs,joueurLabel);
+
         // Titre de la fenêtre
         setTitle("Ile interdite");
 
@@ -45,7 +73,7 @@ public class Fenetre extends JFrame {
         bouton.setPreferredSize(new Dimension(150, 50));
 
         // Ajout d’un listener sur le bouton
-        bouton.addActionListener(e -> finDeTour());
+        bouton.addActionListener(e -> cJ.finDeTour());
 
 
         // Panel pour le bouton (à droite)
@@ -74,10 +102,10 @@ public class Fenetre extends JFrame {
 
         // Ajout au panel existant à droite
         panelButton.add(panelDeplacement);
-        haut.addActionListener(e -> deplacerJoueur( -1, 0));     // ⬆️ haut
-        bas.addActionListener(e -> deplacerJoueur(1, 0));       // ⬇️ bas
-        gauche.addActionListener(e -> deplacerJoueur(0, -1));   // ⬅️ gauche
-        droite.addActionListener(e -> deplacerJoueur(0, 1));    // ➡️ droite
+        haut.addActionListener(e -> cJ.deplacerJoueur( -1, 0));     // ⬆️ haut
+        bas.addActionListener(e -> cJ.deplacerJoueur(1, 0));       // ⬇️ bas
+        gauche.addActionListener(e -> cJ.deplacerJoueur(0, -1));   // ⬅️ gauche
+        droite.addActionListener(e -> cJ.deplacerJoueur(0, 1));    // ➡️ droite
 
         //nouveau panel pour les boutons d'action
         JPanel panelAction = new JPanel(new FlowLayout(FlowLayout.LEFT)); // Aligner à gauche
@@ -87,13 +115,19 @@ public class Fenetre extends JFrame {
         // Ajout des boutons d'assechement , récupérer artefact et chercher clé
         JButton assecher = new JButton("Assécher");
         assecher.setPreferredSize(new Dimension(150, 50));
-        assecher.addActionListener(e -> assecherZone());
+        assecher.addActionListener(e -> cJ.assecherZone());
         panelAction.add(assecher);
 
         JButton recupArtB = new JButton("Récupérer artefact");
         recupArtB.setPreferredSize(new Dimension(150, 50));
-        recupArtB.addActionListener(e->recupArtJoueur());
+        recupArtB.addActionListener(e->cJ.recupArtJoueur());
         panelAction.add(recupArtB);
+
+        JButton chercherclef = new JButton("Chercher une clef");
+        chercherclef.setPreferredSize(new Dimension(150, 50));
+        chercherclef.addActionListener( e-> cJ.chercherClef());
+        panelAction.add(chercherclef);
+
 
         add(panelAction,BorderLayout.SOUTH);
 
@@ -116,30 +150,7 @@ public class Fenetre extends JFrame {
         }
 
 
-        // === Initialisation de l’île ===
-        ile = new Ile();
-        // Création d'un joueur avec des coordonnées valides
-        // Création du joueur dans une zone non submergée
-        int nbJoueurs = 4; // ou 2, 3 selon ce que tu veux
-        for (int i = 0; i < nbJoueurs; i++) {
-            Joueur j = new Joueur(ile.getWidth(), ile.getHeight());
-            while (ile.getZone(j.getX(), j.getY()).getEtat() == Zone.Etat.submerge) {
-                j = new Joueur(ile.getWidth(), ile.getHeight());
-            }
-            j.setId(i);
-            joueurs.add(j);
-        }
-        joueur = joueurs.get(0); // joueur 1 au début
 
-
-        joueurLabel = new JLabel("🎮 Tour du joueur 1", SwingConstants.CENTER);
-        joueurLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        add(joueurLabel, BorderLayout.NORTH);
-
-
-        // Panel principal pour afficher la grille
-        JPanel gridPanel = new JPanel();
-        gridPanel.setLayout(new GridLayout(ile.getWidth(), ile.getHeight()));
 
         // On parcourt chaque zone pour créer son affichage
         for (int i = 0; i < ile.getWidth(); i++) {
@@ -173,146 +184,18 @@ public class Fenetre extends JFrame {
     // Rafraîchir tous les panels une fois le joueur placé
 
 
-    /**
-     * Méthode appelée à chaque "fin de tour"
-     * Inonde 3 zones non-submergées au hasard
-     */
-    private void inonderTroisZones() {
-        // Liste des zones éligibles à l’inondation
-        List<Zone> candidates = new ArrayList<>();
-
-        // Parcours de la grille pour récupérer les zones non submergées
-        for (int i = 0; i < ile.getWidth(); i++) {
-            for (int j = 0; j < ile.getHeight(); j++) {
-                Zone z = ile.getZone(i, j);
-                if (z.getEtat() != Zone.Etat.submerge) {
-                    candidates.add(z);
-                }
-            }
-        }
-
-        // Mélange aléatoire des zones
-        Collections.shuffle(candidates);
-
-        // On va inonder au max 3 zones (ou moins si moins de 3 dispo)
-        int n = Math.min(3, candidates.size());
-
-        // Traitement des n zones sélectionnées
-        for (int i = 0; i < n; i++) {
-            Zone z = candidates.get(i);
-
-            // Si la zone est normale → elle devient inondée
-            if (z.getEtat() == Zone.Etat.normal) {
-                z.changeState(Zone.Etat.inonde);
-            }
-            // Si elle est déjà inondée → elle devient submergée
-            else if (z.getEtat() == Zone.Etat.inonde) {
-                z.changeState(Zone.Etat.submerge);
-            }
-
-            // Rafraîchir son affichage graphique
-            ZonePanel panel = zoneMap.get(z);
-            if (panel != null) {
-                panel.refresh(); // Redessine la couleur selon le nouvel état
-            }
-        }
-        actionsRestantes = 3;
-        System.out.println("🌀 Nouveau tour, actions réinitialisées !");
-
-    }
 
 
-    /**Methode assecherZone
-     * change l'etat de la zone à l'emplacement du joueur en normal si celui est inondé **/
-    public void assecherZone(){
-        if (!consommerAction()) return;
-        int xJ = this.joueur.getX();
-        int yJ = this.joueur.getY();
-        Zone zJ = this.ile.getZone(xJ,yJ);
-        if (zJ.getEtat() == Zone.Etat.inonde){
-            this.ile.setEtatZone(xJ,yJ, Zone.Etat.normal);
-        }else if (zJ.getEtat() == Zone.Etat.submerge){
-            System.out.println("Impossible assèchement de la Zone");
-        }else {
-            // on ne fait rien
-        }
-        ZonePanel zP = zoneMap.get(zJ);
-        zP.refresh();
-    }
-    /**methode recupArtJoueur
-     * récupère l'artefact à l'emplacement
-     * supprime l'artefact de la zone et l"ajoute à l'inventaire du joueur **/
-    public void recupArtJoueur (){
-        if (!consommerAction()) return;
-        int xJ = this.joueur.getX();
-        int yJ = this.joueur.getY();
-        Zone zJ = this.ile.getZone(xJ,yJ);
-        if (zJ instanceof ZoneElement){
-            Artefact a = ((ZoneElement) zJ).getArt();
-            if (a == null ){
-                throw new NullPointerException ("il n'y a pas d'artefact ici");
-
-            }else {
-                this.joueur.addArt(a);
-                this.ile.deletArtZone(xJ,yJ);
-            }
-        }
-    }
 
 
-    // ⬅️ Appelée avec dx/dy = déplacement horizontal/vertical
-    private void deplacerJoueur(int dx, int dy) {
-        if (!consommerAction()) return;
-        int newX = joueur.getX() + dx;
-        int newY = joueur.getY() + dy;
 
-        // ✅ Vérification que la nouvelle position est dans la grille
-        if (newX >= 0 && newX < ile.getWidth() && newY >= 0 && newY < ile.getHeight()) {
-            Zone zoneCible = ile.getZone(newX, newY);
 
-            // ✅ Vérifie que la zone n'est pas submergée
-            if (zoneCible.getEtat() != Zone.Etat.submerge) {
-                // 👣 Déplacer le joueur
-                joueur.setPosition(newX, newY);
 
-                // 🔄 Rafraîchir tous les panneaux pour mettre à jour le contour vert
-                for (ZonePanel panel : zoneMap.values()) {
-                    panel.refresh();
-                }
-            } else {
-                System.out.println("⛔ Zone submergée, impossible d'y aller !");
-            }
-        } else {
-            System.out.println("⛔ Hors de la grille !");
-        }
-    }
 
-    private boolean consommerAction() {
-        if (actionsRestantes > 0) {
-            actionsRestantes--;
-            System.out.println("✅ Action effectuée ! Il reste : " + actionsRestantes);
-            return true;
-        } else {
-            System.out.println("⛔ Plus d'actions disponibles ce tour !");
-            return false;
-        }
-    }
 
-    private void finDeTour() {
-        inonderTroisZones();
 
-        joueurActif = (joueurActif + 1) % joueurs.size();
-        joueur = joueurs.get(joueurActif);
 
-        // Mettre à jour tous les panneaux
-        for (ZonePanel zP : zoneMap.values()) {
-            zP.setJoueur(joueur);
-            zP.refresh();
-        }
 
-        actionsRestantes = 3;
-        joueurLabel.setText("🎮 Tour du joueur " + (joueurActif + 1));
-    }
 
 
 

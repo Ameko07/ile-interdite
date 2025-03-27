@@ -4,13 +4,20 @@
 abstract class Zone {
     // attribut
     Etat etat;
-    Clef cle ;
     private int x, y;
 
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
     }
+    //constructor
+
+    public Zone(){
+        etat = Etat.normal;
+
+    }
+
+    //GETTER
     /**getter getX
      * @return this.x : int **/
     public int getX() {
@@ -21,37 +28,20 @@ abstract class Zone {
     public int getY() {
         return y;
     }
-
-
-    //constructor
-    public Zone(){
-        etat = Etat.normal;
-        cle = null;
-    }
-    //methodes
+    /**getter getEtat
+     * renvoie l'état **/
     public Etat getEtat(){
-       return etat;
+        return etat;
     }
+
     /**methode changeState
      * permet de modifier l'etat de la zone **/
     public void changeState(Etat e){
             etat = e;
     }
 
-    /**setter addCle
-     * @param c : Clef
-     * permet d'ajouter une clf dans la zone surtout pour l'initialisation **/
-    public void addCle(Clef c){
-        this.cle = c;
 
-    }
-
-    /**setter deleteClef
-     * permet de supprimer une clé , utile pour la récupération dans la zone **/
-    void deleteClef(){
-        this.cle = null;
-    }
-
+    //LES ETAT POSSIBLE D'UNE ZONE
     public enum Etat{normal, inonde , submerge}
 
     /**Methode toString pour afficher les états des zones**/
@@ -74,10 +64,37 @@ abstract class Zone {
 /**Classe ZoneOrdinqire
  * une zone normale avec un etat normale **/
 class ZoneOrdinaire extends Zone{
-
+    Clef cle ;
     // constructor
     public ZoneOrdinaire(){
         super();
+        cle = null;
+
+    }
+
+    /**setter addCle
+     * @param c : Clef
+     * permet d'ajouter une clf dans la zone surtout pour l'initialisation **/
+    public void addCle(Clef c){
+        this.cle = c;
+
+    }
+
+    /**setter deleteClef
+     * permet de supprimer une clé , utile pour la récupération dans la zone **/
+    void deleteClef(){
+        this.cle = null;
+    }
+
+    /**getter getCle
+     * @return la clé s'il y en a dans la zone**/
+    public Clef getCle() {
+        return cle;
+    }
+
+    /**Boolean permetant de savoir s'il y a une clé dans la zone **/
+    public boolean thereIsClef(){
+        return (!(cle == null));
     }
 
     @Override
@@ -135,12 +152,7 @@ class ZoneElement extends Zone{
        artefact = false; // ne contient rien par defaut
     }
 
-    /**getter getArt
-     * @return this.art : Artefact**/
-    public Artefact getArt() {
-        return art;
-    }
-
+    //SETTER
     /**setter setArt
      * @param a : Artefact
      * ajoute un nouvel artefacte**/
@@ -159,6 +171,13 @@ class ZoneElement extends Zone{
         this.artefact = false;
     }
 
+    //GETTER
+    /**getter getArt
+     * @return this.art : Artefact**/
+    public Artefact getArt() {
+        return art;
+    }
+
     /**getter de l'elemnent de la zone**/
     public Artefact.Element getElement() {
         return element;
@@ -169,6 +188,7 @@ class ZoneElement extends Zone{
     public boolean thereIsArtefact() {
         return artefact;
     }
+
 
     @Override
     public String toString() {

@@ -10,12 +10,9 @@ public class ZonePanel extends JPanel {
 
     // attribut du texte d'etat de zone
     private JLabel etatTxt =  new JLabel("", SwingConstants.CENTER);
-
     private Color[] couleursJoueurs = {Color.GREEN, Color.MAGENTA, Color.ORANGE, Color.CYAN};
 
-
-
-
+    //Constructor
     public ZonePanel(Zone z) {
         this.zone = z;
         updateColor();
@@ -32,8 +29,6 @@ public class ZonePanel extends JPanel {
          this.etatTxt = new JLabel(e, SwingConstants.CENTER);
         setLayout(new BorderLayout()); // Permet d'ajouter le label au centre
         add(etatTxt, BorderLayout.CENTER);
-
-
 
     }
 

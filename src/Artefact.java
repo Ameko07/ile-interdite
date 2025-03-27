@@ -13,6 +13,8 @@ class Artefact {
         element = e;
 
     }
+    /**getter getType
+     * @return element : Element **/
     public Element getType(){
         return element;
     }

@@ -9,6 +9,8 @@ public class Clef {
         return cleElem;
     }
 
+
+
     @Override
     public String toString() {
         return "Clef de type " + cleElem ;

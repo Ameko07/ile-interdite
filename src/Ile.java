@@ -33,6 +33,13 @@ public class Ile {
         placerZoneElement(new Artefact(Artefact.Element.TERRE), rand);
         placerZoneElement(new Artefact(Artefact.Element.FEU), rand);
 
+        //initialisation des clef aléatoirement sur l'ile
+        placerClef(new Clef(Artefact.Element.EAU),rand);
+        placerClef(new Clef(Artefact.Element.AIR),rand);
+        placerClef(new Clef(Artefact.Element.TERRE),rand);
+        placerClef(new Clef(Artefact.Element.FEU),rand);
+
+
         // === 3. Ajout de 2 zones Héliport ===
         for (int i = 0; i < nbEliport; i++) {
             int x = rand.nextInt(width);
@@ -69,6 +76,30 @@ public class Ile {
         zoneElem.setArt(artefact); // Si tu veux associer l'artefact visuellement
         grille[x][y] = zoneElem;
     }
+
+    /**Methode placerClef
+     * @param clem : Clef
+     * @param rand : random
+     * affecte des coordonnées à une clé pour pouvoir le placer sur l'île **/
+    private void placerClef(Clef clem , Random rand){
+
+        //coordonnée aléatoire
+        int x = rand.nextInt(width);
+        int y = rand.nextInt(height);
+
+        // ne marche que si on tombe sur une ZoneOrdinaire
+        while (!(grille[x][y] instanceof ZoneOrdinaire)) {
+            x = rand.nextInt(width-1);
+            y = rand.nextInt(height-1);
+        }
+        //récupération de la zonne choisi
+        Zone z = this.grille[x][y];
+        ((ZoneOrdinaire)z).addCle(clem);
+        this.grille[x][y] = z;
+        System.out.println("La clef  de type  " + clem.getCleElem() + " x = " + x + " y = " + y  );
+
+    }
+
 
     // === GETTERS ===
 

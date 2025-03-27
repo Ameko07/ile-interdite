@@ -14,8 +14,6 @@ public class ZoneMouse implements MouseListener {
     @Override
     public void mouseClicked(MouseEvent e) {
 
-
-
         if (zone instanceof ZoneElement) {
             System.out.print("Zone Element : ");
             Artefact.Element el = ((ZoneElement) zone).getElement();
