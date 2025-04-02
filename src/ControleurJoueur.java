@@ -11,24 +11,25 @@ public class ControleurJoueur {
     private List<Joueur> joueurs ;
     private JLabel joueurLabel;
 
+    private Fenetre fenetre;
+
     // construtor
-    public ControleurJoueur(Ile i, Joueur j,Map<Zone, ZonePanel> z , List<Joueur> Lj,JLabel labelJoueur){
+    public ControleurJoueur(Ile i, Joueur j, Map<Zone, ZonePanel> z, List<Joueur> Lj, JLabel labelJoueur, Fenetre f) {
+
         this.ile = i;
         this.joueur = j;
         this.zoneMap = z;
         this.joueurs = Lj;
         joueurLabel = labelJoueur;
+        this.fenetre = f;
     }
 
     /**
      * Méthode appelée à chaque "fin de tour"
      * Inonde 3 zones non-submergées au hasard
      */
-    public void inonderTroisZones() {
-        // Liste des zones éligibles à l’inondation
+    private void inonderTroisZones() {
         List<Zone> candidates = new ArrayList<>();
-
-        // Parcours de la grille pour récupérer les zones non submergées
         for (int i = 0; i < ile.getWidth(); i++) {
             for (int j = 0; j < ile.getHeight(); j++) {
                 Zone z = ile.getZone(i, j);
@@ -38,34 +39,36 @@ public class ControleurJoueur {
             }
         }
 
-        // Mélange aléatoire des zones
         Collections.shuffle(candidates);
-
-        // On va inonder au max 3 zones (ou moins si moins de 3 dispo)
         int n = Math.min(3, candidates.size());
 
-        // Traitement des n zones sélectionnées
         for (int i = 0; i < n; i++) {
             Zone z = candidates.get(i);
 
-            // Si la zone est normale → elle devient inondée
+            // 🧍‍♂️ Si un joueur est sur cette zone ET elle va devenir submergée
+            for (Joueur j : joueurs) {
+                if (j.getX() == z.getX() && j.getY() == z.getY() && z.getEtat() == Zone.Etat.inonde) {
+                    if (!aUneZoneAdjacenteAccessible(j)) {
+                        JOptionPane.showMessageDialog(null, "💀 Le joueur " + (j.getId() + 1) + " s’est noyé ! Partie perdue...");
+                        partiePerdue = true;
+                        System.exit(0);
+                        return;
+                    }
+                }
+            }
+
+            // Changement d'état
             if (z.getEtat() == Zone.Etat.normal) {
                 z.changeState(Zone.Etat.inonde);
-            }
-            // Si elle est déjà inondée → elle devient submergée
-            else if (z.getEtat() == Zone.Etat.inonde) {
+            } else if (z.getEtat() == Zone.Etat.inonde) {
                 z.changeState(Zone.Etat.submerge);
             }
 
-            // Rafraîchir son affichage graphique
             ZonePanel panel = zoneMap.get(z);
-            if (panel != null) {
-                panel.refresh(); // Redessine la couleur selon le nouvel état
-            }
+            if (panel != null) panel.refresh();
         }
-        actionsRestantes = 3;
-        System.out.println("🌀 Nouveau tour, actions réinitialisées !");
 
+        System.out.println("🌀 Nouveau tour, actions réinitialisées !");
     }
 
     /**Function consommerAction
@@ -74,6 +77,7 @@ public class ControleurJoueur {
         if (actionsRestantes > 0) {
             actionsRestantes--;
             System.out.println("✅ Action effectuée ! Il reste : " + actionsRestantes);
+            fenetre.updateInfos(joueur.getId(), actionsRestantes);
             return true;
         } else {
             System.out.println("⛔ Plus d'actions disponibles ce tour !");
@@ -102,23 +106,48 @@ public class ControleurJoueur {
     /**methode recupArtJoueur
      * récupère l'artefact à l'emplacement
      * supprime l'artefact de la zone et l"ajoute à l'inventaire du joueur **/
-    public void recupArtJoueur (){
+    public void recupArtJoueur() {
         if (!consommerAction()) return;
-        int xJ = this.joueur.getX();
-        int yJ = this.joueur.getY();
-        Zone zJ = this.ile.getZone(xJ,yJ);
-        if (zJ instanceof ZoneElement){
-            Artefact a = ((ZoneElement) zJ).getArt();
-            if (a == null ){
-                throw new NullPointerException ("il n'y a pas d'artefact ici");
 
-            }else if (joueur.possedeClef(new Clef(((ZoneElement) zJ).getElement()))){
-                this.joueur.addArt(a);
-                this.ile.deletArtZone(xJ,yJ);
-                System.out.println("Le joueur a récupéré un artéfact de type " + joueur.getArt());
+        int xJ = joueur.getX();
+        int yJ = joueur.getY();
+        Zone z = ile.getZone(xJ, yJ);
+
+        if (z instanceof ZoneElement zoneElem && zoneElem.thereIsArtefact()) {
+            Artefact.Element type = zoneElem.getElement();
+
+            // Compte les clés de ce type
+            int count = 0;
+            for (Clef c : joueur.getClefs()) {
+                if (c.getCleElem() == type) count++;
             }
+
+            if (count >= 4) {
+                // Enlève 4 clefs de ce type
+                int removed = 0;
+                ArrayList<Clef> aRetirer = new ArrayList<>();
+                for (Clef c : joueur.getClefs()) {
+                    if (c.getCleElem() == type && removed < 4) {
+                        aRetirer.add(c);
+                        removed++;
+                    }
+                }
+                joueur.getClefs().removeAll(aRetirer);
+
+                // Ajoute l'artefact et supprime de la zone
+                joueur.addArt(zoneElem.getArt());
+                zoneElem.deletArt();
+                System.out.println("🎁 Artefact récupéré !");
+
+                checkVictoire(); // Vérifie si c’est la fin de la partie
+            } else {
+                System.out.println("⛔ Pas assez de clefs !");
+            }
+        } else {
+            System.out.println("❌ Pas d'artefact ici !");
         }
     }
+
 
     // ⬅️ Appelée avec dx/dy = déplacement horizontal/vertical
     public void deplacerJoueur(int dx, int dy) {
@@ -201,21 +230,37 @@ public class ControleurJoueur {
 
 
     // FIN DE TOUR
+    private boolean partiePerdue = false;
+
     public void finDeTour() {
         inonderTroisZones();
 
+        // 💥 Vérifier si l’héliport a disparu
+        for (int i = 0; i < ile.getWidth(); i++) {
+            for (int j = 0; j < ile.getHeight(); j++) {
+                Zone z = ile.getZone(i, j);
+                if (z instanceof ZoneEliport && z.getEtat() == Zone.Etat.submerge) {
+                    JOptionPane.showMessageDialog(null, "💀 L'héliport a été submergé ! Partie perdue...");
+                    partiePerdue = true;
+                    System.exit(0);
+                    return;
+                }
+            }
+        }
+
+        // ⏭️ Tour suivant (si on n’a pas perdu)
         joueurActif = (joueurActif + 1) % joueurs.size();
         joueur = joueurs.get(joueurActif);
+        actionsRestantes = 3;
 
-        // Mettre à jour tous les panneaux
         for (ZonePanel zP : zoneMap.values()) {
             zP.setJoueur(joueur);
             zP.refresh();
         }
 
-        actionsRestantes = 3;
         joueurLabel.setText("🎮 Tour du joueur " + (joueurActif + 1));
     }
+
 
 
 
@@ -237,4 +282,80 @@ public class ControleurJoueur {
     public int getActionsRestantes() {
         return actionsRestantes;
     }
+
+    public void assecherAdjacente(int dx, int dy) {
+        if (!consommerAction()) return;
+
+        int x = joueur.getX() + dx;
+        int y = joueur.getY() + dy;
+
+        // ✅ Vérification des bornes
+        if (x >= 0 && x < ile.getWidth() && y >= 0 && y < ile.getHeight()) {
+            Zone cible = ile.getZone(x, y);
+            if (cible.getEtat() == Zone.Etat.inonde) {
+                cible.changeState(Zone.Etat.normal);
+                System.out.println("💧 Zone (" + x + "," + y + ") asséchée !");
+                zoneMap.get(cible).refresh();
+            } else {
+                System.out.println("❌ La zone n'est pas inondée.");
+            }
+        } else {
+            System.out.println("⛔ Zone hors de la grille.");
+        }
+    }
+
+    private void checkVictoire() {
+        boolean tousArtefacts = true;
+        for (Artefact.Element elem : Artefact.Element.values()) {
+            boolean present = false;
+            for (Joueur j : joueurs) {
+                for (Artefact a : j.getArt()) {
+                    if (a.getType() == elem) {
+                        present = true;
+                        break;
+                    }
+                }
+            }
+            if (!present) {
+                tousArtefacts = false;
+                break;
+            }
+        }
+
+        if (!tousArtefacts) return;
+
+        // Vérifie que tous les joueurs sont sur un héliport
+        boolean tousSurHeliport = true;
+        for (Joueur j : joueurs) {
+            Zone z = ile.getZone(j.getX(), j.getY());
+            if (!(z instanceof ZoneEliport)) {
+                tousSurHeliport = false;
+                break;
+            }
+        }
+
+        if (tousSurHeliport) {
+            JOptionPane.showMessageDialog(null, "🎉 Félicitations ! Vous avez gagné !");
+            System.exit(0);
+        }
+    }
+    private boolean aUneZoneAdjacenteAccessible(Joueur j) {
+        int[][] directions = {{-1,0},{1,0},{0,-1},{0,1}};
+        for (int[] dir : directions) {
+            int nx = j.getX() + dir[0];
+            int ny = j.getY() + dir[1];
+
+            if (nx >= 0 && nx < ile.getWidth() && ny >= 0 && ny < ile.getHeight()) {
+                Zone adj = ile.getZone(nx, ny);
+                if (adj.getEtat() != Zone.Etat.submerge) {
+                    return true; // Y'a une issue
+                }
+            }
+        }
+        return false; // Piégé
+    }
+
+
+
+
 }

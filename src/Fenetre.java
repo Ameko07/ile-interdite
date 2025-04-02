@@ -15,29 +15,26 @@ import java.util.Collections;
 // Classe principale de la fenêtre du jeu, hérite de JFrame
 public class Fenetre extends JFrame {
 
-    // Map entre chaque Zone (données) et son affichage (ZonePanel)
     private Map<Zone, ZonePanel> zoneMap = new HashMap<>();
-
-    // L’île, avec ses zones
     private Ile ile;
     private Joueur joueur;
-    private int actionsRestantes = 3;
     private List<Joueur> joueurs = new ArrayList<>();
     private int joueurActif = 0;
-    private JLabel joueurLabel; // affichage du joueur courant
-    private Color[] couleursJoueurs = {Color.GREEN, Color.MAGENTA, Color.ORANGE, Color.CYAN};
+    private JLabel joueurLabel;
+    private JLabel actionsLabel;
+    private ControleurJoueur cJ;
+    private JTextArea infosJoueurs;
 
 
-
-    // Constructeur de la fenêtre
     public Fenetre() {
+        setTitle("🌊 Île Interdite");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout(15, 15));
+        getContentPane().setBackground(new Color(235, 245, 255));
 
-        // === Initialisation de l’île ===
+        // ==== Initialisation logique ====
         ile = new Ile();
-        // Création d'un joueur avec des coordonnées valides
-        // Création du joueur dans une zone non submergée
-        int nbJoueurs = 4; // ou 2, 3 selon ce que tu veux
-        for (int i = 0; i < nbJoueurs; i++) {
+        for (int i = 0; i < 4; i++) {
             Joueur j = new Joueur(ile.getWidth(), ile.getHeight());
             while (ile.getZone(j.getX(), j.getY()).getEtat() == Zone.Etat.submerge) {
                 j = new Joueur(ile.getWidth(), ile.getHeight());
@@ -45,162 +42,184 @@ public class Fenetre extends JFrame {
             j.setId(i);
             joueurs.add(j);
         }
-        joueur = joueurs.get(0); // joueur 1 au début
+        joueur = joueurs.get(0);
 
-
+        // ==== Initialisation UI ====
         joueurLabel = new JLabel("🎮 Tour du joueur 1", SwingConstants.CENTER);
-        joueurLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        infosJoueurs = new JTextArea(8, 30);
+        infosJoueurs.setEditable(false);
+        infosJoueurs.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        infosJoueurs.setBorder(BorderFactory.createTitledBorder("📋 Inventaire des joueurs"));
+        add(new JScrollPane(infosJoueurs), BorderLayout.WEST);
+
+        joueurLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        joueurLabel.setForeground(new Color(33, 45, 66));
+        joueurLabel.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
         add(joueurLabel, BorderLayout.NORTH);
 
-
-        // Panel principal pour afficher la grille
-        JPanel gridPanel = new JPanel();
-        gridPanel.setLayout(new GridLayout(ile.getWidth(), ile.getHeight()));
-        // initialisation du controleur de joueur
-        ControleurJoueur cJ = new ControleurJoueur(this.ile, this.joueur,zoneMap,joueurs,joueurLabel);
-
-        // Titre de la fenêtre
-        setTitle("Ile interdite");
-
-        // Quand on ferme la fenêtre → quitter le programme
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Layout principal : BorderLayout
-        setLayout(new BorderLayout());
-
-        // === Création du bouton "Fin de tour" ===
-        JButton bouton = new JButton("Fin de tour");
-        bouton.setPreferredSize(new Dimension(150, 50));
-
-        // Ajout d’un listener sur le bouton
-        bouton.addActionListener(e -> cJ.finDeTour());
+        cJ = new ControleurJoueur(ile, joueur, zoneMap, joueurs, joueurLabel, this);
 
 
-        // Panel pour le bouton (à droite)
-        JPanel panelButton = new JPanel();
-        panelButton.add(bouton);
-
-        // Ajout du panel de bouton à droite (EAST)
-        add(panelButton, BorderLayout.EAST);
-        // === Panel des déplacements ===
-        JPanel panelDeplacement = new JPanel();
-        panelDeplacement.setLayout(new GridLayout(2, 3, 5, 5)); // espacement stylé
-
-// Création des boutons directionnels
-        JButton haut = new JButton("↑");
-        JButton bas = new JButton("↓");
-        JButton gauche = new JButton("←");
-        JButton droite = new JButton("→");
-
-      // Ajout des boutons au panel (en forme de croix)
-        panelDeplacement.add(new JLabel()); // vide
-        panelDeplacement.add(haut);
-        panelDeplacement.add(new JLabel()); // vide
-        panelDeplacement.add(gauche);
-        panelDeplacement.add(bas);
-        panelDeplacement.add(droite);
-
-        // Ajout au panel existant à droite
-        panelButton.add(panelDeplacement);
-        haut.addActionListener(e -> cJ.deplacerJoueur( -1, 0));     // ⬆️ haut
-        bas.addActionListener(e -> cJ.deplacerJoueur(1, 0));       // ⬇️ bas
-        gauche.addActionListener(e -> cJ.deplacerJoueur(0, -1));   // ⬅️ gauche
-        droite.addActionListener(e -> cJ.deplacerJoueur(0, 1));    // ➡️ droite
-
-        //nouveau panel pour les boutons d'action
-        JPanel panelAction = new JPanel(new FlowLayout(FlowLayout.LEFT)); // Aligner à gauche
-
-
-
-        // Ajout des boutons d'assechement , récupérer artefact et chercher clé
-        JButton assecher = new JButton("Assécher");
-        assecher.setPreferredSize(new Dimension(150, 50));
-        assecher.addActionListener(e -> cJ.assecherZone());
-        panelAction.add(assecher);
-
-        JButton recupArtB = new JButton("Récupérer artefact");
-        recupArtB.setPreferredSize(new Dimension(150, 50));
-        recupArtB.addActionListener(e->cJ.recupArtJoueur());
-        panelAction.add(recupArtB);
-
-        JButton chercherclef = new JButton("Chercher une clef");
-        chercherclef.setPreferredSize(new Dimension(150, 50));
-        chercherclef.addActionListener( e-> cJ.chercherClef());
-        panelAction.add(chercherclef);
-
-
-        add(panelAction,BorderLayout.SOUTH);
-
-
-
-
-        //  BONUS VISUEL
-
-        Font fontBouton = new Font("Arial", Font.BOLD, 20); // Police moderne et lisible
-        Color couleurFond = new Color(220, 220, 220);       // Gris clair
-        Color couleurTexte = Color.DARK_GRAY;
-
-        JButton[] boutons = {haut, bas, gauche, droite};
-        for (JButton b : boutons) {
-            b.setFont(fontBouton);
-            b.setBackground(couleurFond);
-            b.setForeground(couleurTexte);
-            b.setFocusPainted(false); // Enlève le cadre moche quand sélectionné
-            b.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        }
-
-
-
-
-        // On parcourt chaque zone pour créer son affichage
+        // ==== Panel Grille ====
+        JPanel gridPanel = new JPanel(new GridLayout(ile.getWidth(), ile.getHeight(), 3, 3));
+        gridPanel.setBackground(new Color(210, 230, 250));
         for (int i = 0; i < ile.getWidth(); i++) {
             for (int j = 0; j < ile.getHeight(); j++) {
-                Zone zone = ile.getZone(i, j);
-                ZonePanel zP = new ZonePanel(zone);
-
-                // ⬇️ ici on donne le joueur à chaque ZonePanel
-                zP.setJoueur(joueur);
-
-                gridPanel.add(zP);
-                zoneMap.put(zone, zP);
+                Zone z = ile.getZone(i, j);
+                ZonePanel zp = new ZonePanel(z);
+                zp.setJoueur(joueur);
+                gridPanel.add(zp);
+                zoneMap.put(z, zp);
             }
         }
-        for (ZonePanel panel : zoneMap.values()) {
-            panel.refresh(); // ✅ ça force chaque case à vérifier si le joueur est là
-        }
-
-        // Ajout du panel de grille au centre de la fenêtre
+        zoneMap.values().forEach(ZonePanel::refresh);
         add(gridPanel, BorderLayout.CENTER);
 
-        // Ajuste automatiquement la taille de la fenêtre selon les composants
+        // ==== Panel Est (Actions & Déplacements) ====
+        JPanel panelRight = new JPanel();
+        panelRight.setLayout(new BoxLayout(panelRight, BoxLayout.Y_AXIS));
+        panelRight.setBackground(new Color(245, 250, 255));
+        panelRight.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JButton finTour = makeButton("✅ Fin de tour");
+        finTour.addActionListener(e -> {
+            cJ.finDeTour();
+            actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
+        });
+        panelRight.add(finTour);
+        panelRight.add(Box.createVerticalStrut(15));
+
+        // Déplacements
+        panelRight.add(new JLabel("Déplacements", SwingConstants.CENTER));
+        panelRight.add(Box.createVerticalStrut(10));
+        panelRight.add(buildCrossPanel(
+                makeActionButton("↑", () -> deplacer(-1, 0)),
+                makeActionButton("↓", () -> deplacer(1, 0)),
+                makeActionButton("←", () -> deplacer(0, -1)),
+                makeActionButton("→", () -> deplacer(0, 1))
+        ));
+        panelRight.add(Box.createVerticalStrut(25));
+
+        // Assèchement
+        panelRight.add(new JLabel("Assécher Adjacent", SwingConstants.CENTER));
+        panelRight.add(Box.createVerticalStrut(10));
+        panelRight.add(buildCrossPanel(
+                makeActionButton("↑", () -> cJ.assecherAdjacente(-1, 0)),
+                makeActionButton("↓", () -> cJ.assecherAdjacente(1, 0)),
+                makeActionButton("←", () -> cJ.assecherAdjacente(0, -1)),
+                makeActionButton("→", () -> cJ.assecherAdjacente(0, 1))
+        ));
+
+        add(panelRight, BorderLayout.EAST);
+
+        // ==== Panel Sud ====
+        JPanel panelBas = new JPanel();
+        panelBas.setLayout(new BoxLayout(panelBas, BoxLayout.Y_AXIS));
+        panelBas.setBackground(new Color(235, 245, 255));
+        panelBas.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+
+        actionsLabel = new JLabel("⚙️ Actions restantes : 3", SwingConstants.CENTER);
+        actionsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        actionsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelBas.add(actionsLabel);
+        panelBas.add(Box.createVerticalStrut(10));
+
+        JPanel panelActions = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        panelActions.setBackground(new Color(235, 245, 255));
+
+        JButton ass = makeButton("💧 Assécher");
+        ass.addActionListener(e -> {
+            cJ.assecherZone();
+            actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
+        });
+
+        JButton recup = makeButton("🗿 Récupérer artefact");
+        recup.addActionListener(e -> {
+            cJ.recupArtJoueur();
+            actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
+        });
+
+        JButton cle = makeButton("🔑 Chercher une clef");
+        cle.addActionListener(e -> {
+            cJ.chercherClef();
+            actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
+        });
+
+        panelActions.add(ass);
+        panelActions.add(recup);
+        panelActions.add(cle);
+        panelBas.add(panelActions);
+        add(panelBas, BorderLayout.SOUTH);
+
         pack();
-
-        // Taille finale de la fenêtre
-        setSize(1200, 800);
-
-        // Affichage visible
+        setMinimumSize(new Dimension(1100, 750));
+        setLocationRelativeTo(null); // centre écran
         setVisible(true);
+
     }
-    // Rafraîchir tous les panels une fois le joueur placé
+
+    private void deplacer(int dx, int dy) {
+        cJ.deplacerJoueur(dx, dy);
+        actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
+    }
+
+    private JButton makeButton(String text) {
+        JButton b = new JButton(text);
+        b.setPreferredSize(new Dimension(180, 40));
+        b.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        b.setBackground(new Color(220, 230, 240));
+        b.setFocusPainted(false);
+        b.setForeground(new Color(30, 30, 30));
+        return b;
+    }
+
+    private JButton makeActionButton(String label, Runnable action) {
+        JButton b = new JButton(label);
+        b.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        b.setBackground(new Color(230, 255, 230));
+        b.setForeground(Color.BLACK);
+        b.setFocusPainted(false);
+        b.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        b.addActionListener(e -> action.run());
+        return b;
+    }
+
+    private JPanel buildCrossPanel(JButton up, JButton down, JButton left, JButton right) {
+        JPanel p = new JPanel(new GridLayout(2, 3, 5, 5));
+        p.setOpaque(false);
+        p.add(new JLabel());
+        p.add(up);
+        p.add(new JLabel());
+        p.add(left);
+        p.add(down);
+        p.add(right);
+        return p;
+    }
 
 
 
+    public void updateInfos(int joueurActif, int actionsRestantes) {
+        StringBuilder sb = new StringBuilder();
+        for (Joueur j : joueurs) {
+            sb.append("🎮 Joueur ").append(j.getId() + 1);
+            if (j.getId() == joueurActif) sb.append(" (ACTIF)");
+            sb.append("\n  🔑 Clés: ");
+            for (Clef c : j.getClefs()) {
+                sb.append(c.getCleElem()).append(" ");
+            }
+            sb.append("\n  ✨ Artefacts: ");
+            for (Artefact a : j.getArt()) {
+                sb.append(a.getType()).append(" ");
+            }
+            sb.append("\n\n");
+        }
 
+        sb.append("⚡ Actions restantes : ").append(actionsRestantes).append("\n");
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        infosJoueurs.setText(sb.toString());
+    }
 
 
 }
+
+

@@ -10,6 +10,7 @@ public class Joueur {
     ArrayList<Artefact> art; // peut avoir plusieurs artefacte
     private int id;
 
+
     //constructor
     public Joueur(int maxX, int maxY) {
         Random rand = new Random();
@@ -106,7 +107,8 @@ public class Joueur {
      * @return true si clef existe dans la liste sinon false**/
     public boolean possedeClef(Clef clef){
         for (Clef c : this.clefs){
-            if (c == clef) return true ;
+            if (c.getCleElem().equals(clef.getCleElem())) return true;
+
         }
         return false;
     }
@@ -118,6 +120,17 @@ public class Joueur {
                 " nombre clefs = " + nbClefs() +
                 " nombre artefact = " + nbArts() ;
     }
+
+    public void removeClef(Clef clef){
+        for (int i = 0; i < clefs.size(); i++) {
+            if (clefs.get(i).getCleElem().equals(clef.getCleElem())) {
+                clefs.remove(i);
+                break; // on enlève une seule clef
+            }
+        }
+    }
+
+
 
 
 
