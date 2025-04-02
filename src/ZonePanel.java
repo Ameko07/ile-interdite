@@ -12,10 +12,13 @@ public class ZonePanel extends JPanel {
     private JLabel etatTxt =  new JLabel("", SwingConstants.CENTER);
     private Color[] couleursJoueurs = {Color.GREEN, Color.MAGENTA, Color.ORANGE, Color.CYAN};
 
+    private ImagesArtefact imgArt;
+
     //Constructor
     public ZonePanel(Zone z) {
         this.zone = z;
         updateColor();
+        setLayout(new BorderLayout());  // Permet d'ajouter des composants
 
         // Création de l'écouteur avant de l'ajouter
 
@@ -28,7 +31,15 @@ public class ZonePanel extends JPanel {
 
          this.etatTxt = new JLabel(e, SwingConstants.CENTER);
         setLayout(new BorderLayout()); // Permet d'ajouter le label au centre
-        add(etatTxt, BorderLayout.CENTER);
+        add(etatTxt, BorderLayout.NORTH);
+
+
+
+
+        imgArt = new ImagesArtefact();
+        imgArt.setOpaque(false);
+        imgArt.setBackground(new Color(0, 0, 0, 0)); // Transparent
+        add(imgArt, BorderLayout.CENTER);
 
     }
 
@@ -87,7 +98,9 @@ public class ZonePanel extends JPanel {
     /**methode refresh
      * met à jour les couleur et les attributs des zones**/
     public void refresh() {
+        imgArt.setZone(zone);
         updateColor();
+
         repaint();
     }
 

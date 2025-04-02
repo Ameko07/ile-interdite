@@ -24,6 +24,10 @@ public class Fenetre extends JFrame {
     private JLabel actionsLabel;
     private ControleurJoueur cJ;
     private JTextArea infosJoueurs;
+    private Musique musiqueBG;
+    private Images imageBG;
+    private ImagesArtefact imagesArt;
+
 
 
     public Fenetre() {
@@ -31,6 +35,15 @@ public class Fenetre extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout(15, 15));
         getContentPane().setBackground(new Color(235, 245, 255));
+
+
+        //initialisation des image
+        imageBG =  new Images("src/JungleImageBG.JPG");
+        imageBG.setLayout(new BorderLayout()); // Permet d'ajouter d'autres composants
+        setContentPane(imageBG);
+
+
+
 
         // ==== Initialisation logique ====
         ile = new Ile();
@@ -78,7 +91,9 @@ public class Fenetre extends JFrame {
         // ==== Panel Est (Actions & Déplacements) ====
         JPanel panelRight = new JPanel();
         panelRight.setLayout(new BoxLayout(panelRight, BoxLayout.Y_AXIS));
-        panelRight.setBackground(new Color(245, 250, 255));
+        panelRight.setOpaque(false);
+        panelRight.setBackground(new Color(0, 0, 0, 0)); // Transparent
+        //panelRight.setBackground(new Color(245, 250, 255));
         panelRight.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JButton finTour = makeButton("✅ Fin de tour");
@@ -101,7 +116,14 @@ public class Fenetre extends JFrame {
         panelRight.add(Box.createVerticalStrut(25));
 
         // Assèchement
-        panelRight.add(new JLabel("Assécher Adjacent", SwingConstants.CENTER));
+
+        JLabel assechLab = new JLabel("Assécher Adjacent", SwingConstants.CENTER);
+
+        assechLab.setForeground(Color.decode("#a7eef7"));  // Texte en bleu
+        //assechLab.setOpaque(false);            // Active le fond
+        //assechLab.setBackground(Color.LIGHT_GRAY); // Fond gris clair
+
+        panelRight.add(assechLab);
         panelRight.add(Box.createVerticalStrut(10));
         panelRight.add(buildCrossPanel(
                 makeActionButton("↑", () -> cJ.assecherAdjacente(-1, 0)),
@@ -115,17 +137,23 @@ public class Fenetre extends JFrame {
         // ==== Panel Sud ====
         JPanel panelBas = new JPanel();
         panelBas.setLayout(new BoxLayout(panelBas, BoxLayout.Y_AXIS));
-        panelBas.setBackground(new Color(235, 245, 255));
+
+        //panelBas.setBackground(new Color(235, 245, 255));
         panelBas.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+        panelBas.setOpaque(false);
+        panelBas.setBackground(new Color(0, 0, 0, 0)); // Transparent
 
         actionsLabel = new JLabel("⚙️ Actions restantes : 3", SwingConstants.CENTER);
+        actionsLabel.setForeground(Color.WHITE);
         actionsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         actionsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelBas.add(actionsLabel);
         panelBas.add(Box.createVerticalStrut(10));
 
         JPanel panelActions = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        panelActions.setBackground(new Color(235, 245, 255));
+
+        panelActions.setOpaque(false);
+        panelActions.setBackground(new Color(0, 0, 0, 0)); // Transparent
 
         JButton ass = makeButton("💧 Assécher");
         ass.addActionListener(e -> {
@@ -150,6 +178,10 @@ public class Fenetre extends JFrame {
         panelActions.add(cle);
         panelBas.add(panelActions);
         add(panelBas, BorderLayout.SOUTH);
+
+        // initiqlisqtion de la musique de fond
+        musiqueBG = new Musique();
+        musiqueBG.jouerMusique("C:\\Users\\lafat\\Université\\POGL\\ile-interdite\\src\\JungleMusic.WAV");
 
         pack();
         setMinimumSize(new Dimension(1100, 750));
