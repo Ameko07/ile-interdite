@@ -88,13 +88,17 @@ public class Ile {
         int y = rand.nextInt(height);
 
         // ne marche que si on tombe sur une ZoneOrdinaire
+
+
         while (!(grille[x][y] instanceof ZoneOrdinaire)) {
-            x = rand.nextInt(width-1);
-            y = rand.nextInt(height-1);
+            x = rand.nextInt(width);
+            y = rand.nextInt(height);
         }
         //récupération de la zonne choisi
         Zone z = this.grille[x][y];
-        ((ZoneOrdinaire)z).addCle(clem);
+        if (! (((ZoneOrdinaire)z).thereIsClef() )) {
+            ((ZoneOrdinaire) z).addCle(clem);
+        }
         this.grille[x][y] = z;
         System.out.println("La clef  de type  " + clem.getCleElem() + " x = " + x + " y = " + y  );
 

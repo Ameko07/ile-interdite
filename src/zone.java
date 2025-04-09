@@ -110,7 +110,7 @@ class ZoneOrdinaire extends Zone{
 
 class ZoneEliport extends Zone{
     //attribut
-    int nbJoueur;// permet de savoir si l'evacuation des joueur est possible
+    private int nbJoueur;// permet de savoir si l'evacuation des joueur est possible
 
     // cpnstructor
     public ZoneEliport (){
@@ -158,6 +158,11 @@ class ZoneElement extends Zone{
      * ajoute un nouvel artefacte**/
     public void setArt(Artefact a) {
         // on ajoute l'artefact
+
+        // condition inutile en soit car ce n'est pas le joueur qui défini quel artefact ira dans quel zone;
+        if (! a.element.equals(this.getElement())){
+            throw new IllegalArgumentException("L'artefact n'est pas de bon élément");
+        }
         this.art = a;
         this.artefact = true;
     }
