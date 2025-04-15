@@ -173,6 +173,20 @@ public class Fenetre extends JFrame {
             actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
         });
 
+
+
+        if (this.cJ.getJoueur().getActionValues("Sac De Sable") > 0) {
+            JButton sacSable = makeActionButton("Sac de sable", () -> makeFenetreSacSable());
+            panelActions.add(sacSable);
+            panelActions.revalidate();
+            panelActions.repaint();
+        }
+
+
+
+
+        //JButton helico = makeButton("Helicoptère");
+
         panelActions.add(ass);
         panelActions.add(recup);
         panelActions.add(cle);
@@ -195,6 +209,7 @@ public class Fenetre extends JFrame {
         actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
     }
 
+    /**Methode de création de bouton**/
     private JButton makeButton(String text) {
         JButton b = new JButton(text);
         b.setPreferredSize(new Dimension(180, 40));
@@ -205,6 +220,7 @@ public class Fenetre extends JFrame {
         return b;
     }
 
+    /**Methode de création d'action de bouton**/
     private JButton makeActionButton(String label, Runnable action) {
         JButton b = new JButton(label);
         b.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -215,6 +231,8 @@ public class Fenetre extends JFrame {
         b.addActionListener(e -> action.run());
         return b;
     }
+
+    //METTRE DES COMMENTAIRE
 
     private JPanel buildCrossPanel(JButton up, JButton down, JButton left, JButton right) {
         JPanel p = new JPanel(new GridLayout(2, 3, 5, 5));
@@ -229,7 +247,8 @@ public class Fenetre extends JFrame {
     }
 
 
-
+    /**Methode update Info
+     * Met à jour les informations affché du joueur actif**/
     public void updateInfos(int joueurActif, int actionsRestantes) {
         StringBuilder sb = new StringBuilder();
         for (Joueur j : joueurs) {
@@ -250,6 +269,102 @@ public class Fenetre extends JFrame {
 
         infosJoueurs.setText(sb.toString());
     }
+
+    /**Fonction makeFenetre  qui affiche une fenetre avec des bouton et des input
+     **/
+    private void makeFenetreSacSable() {
+        JDialog miniFenetre = new JDialog(this, "Sac de Sable", true);
+        miniFenetre.setLayout(new GridLayout(4, 2, 10, 10));
+        miniFenetre.setSize(300, 200);
+        miniFenetre.setLocationRelativeTo(this);
+
+        JLabel labelX = new JLabel("Coordonnée X (0-5) :");
+        JTextField inputX = new JTextField();
+
+        JLabel labelY = new JLabel("Coordonnée Y (0-5) :");
+        JTextField inputY = new JTextField();
+
+        JLabel messageErreur = new JLabel("");
+        messageErreur.setForeground(Color.RED);
+
+        JButton valider = new JButton("Valider");
+        valider.addActionListener(e -> {
+            try {
+                int x = Integer.parseInt(inputX.getText());
+                int y = Integer.parseInt(inputY.getText());
+
+                if (x >= 0 && x <= 5 && y >= 0 && y <= 5) {
+                    // Action à exécuter avec les coordonnées
+                    cJ.SacDeSable(x,y);
+                    System.out.println("Coordonnées valides : x=" + x + ", y=" + y);
+                    miniFenetre.dispose(); // Fermer la mini-fenêtre
+                } else {
+                    messageErreur.setText("Coordonnées invalides !");
+                }
+            } catch (NumberFormatException ex) {
+                messageErreur.setText("Veuillez entrer des nombres valides !");
+            }
+        });
+
+        miniFenetre.add(labelX);
+        miniFenetre.add(inputX);
+        miniFenetre.add(labelY);
+        miniFenetre.add(inputY);
+        miniFenetre.add(new JLabel());  // espace vide
+        miniFenetre.add(valider);
+        miniFenetre.add(messageErreur);
+
+        miniFenetre.setVisible(true);
+    }
+
+    /**Fonction makeFenetre  qui affiche une fenetre avec des bouton et des input
+
+     * **/
+    /**private void makeFenetreHelico() {
+        JDialog miniFenetre = new JDialog(this, "Helicoptère", true);
+        miniFenetre.setLayout(new GridLayout(4, 2, 10, 10));
+        miniFenetre.setSize(300, 200);
+        miniFenetre.setLocationRelativeTo(this);
+
+        JLabel labelX = new JLabel("Coordonnée X (0-5) :");
+        JTextField inputX = new JTextField();
+
+        JLabel labelY = new JLabel("Coordonnée Y (0-5) :");
+        JTextField inputY = new JTextField();
+
+        JLabel messageErreur = new JLabel("");
+        messageErreur.setForeground(Color.RED);
+
+        JButton valider = new JButton("Valider");
+        valider.addActionListener(e -> {
+            try {
+                int x = Integer.parseInt(inputX.getText());
+                int y = Integer.parseInt(inputY.getText());
+
+                if (x >= 0 && x <= 5 && y >= 0 && y <= 5) {
+                    // Action à exécuter avec les coordonnées
+                    cj.helicopter(x,y);
+                    System.out.println("Coordonnées valides : x=" + x + ", y=" + y);
+                    miniFenetre.dispose(); // Fermer la mini-fenêtre
+                } else {
+                    messageErreur.setText("Coordonnées invalides !");
+                }
+            } catch (NumberFormatException ex) {
+                messageErreur.setText("Veuillez entrer des nombres valides !");
+            }
+        });
+
+        miniFenetre.add(labelX);
+        miniFenetre.add(inputX);
+        miniFenetre.add(labelY);
+        miniFenetre.add(inputY);
+        miniFenetre.add(new JLabel());  // espace vide
+        miniFenetre.add(valider);
+        miniFenetre.add(messageErreur);
+
+        miniFenetre.setVisible(true);
+    }**/
+
 
 
 }

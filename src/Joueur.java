@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class Joueur {
@@ -9,6 +10,7 @@ public class Joueur {
     ArrayList<Clef> clefs; // peux avoir plusieurs clés
     ArrayList<Artefact> art; // peut avoir plusieurs artefacte
     private int id;
+    HashMap<String, Integer> ActionSpecial ;
 
 
     //constructor
@@ -18,6 +20,9 @@ public class Joueur {
         this.y = rand.nextInt(maxY);
         clefs = new ArrayList<>();
         art = new ArrayList<>();
+        ActionSpecial = new HashMap<>();
+        ActionSpecial.put("Sac De Sable", 0);
+        ActionSpecial.put("Helicopter", 0);
     }
 
 
@@ -43,6 +48,27 @@ public class Joueur {
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    /**Setter addAction
+     * @param s  : String
+     * incrémente le nombre d'action disponibe**/
+    public void addAction(String s){
+        int acc = this.ActionSpecial.get(s);
+
+        this.ActionSpecial.put(s,acc+1);
+    }
+    /**setter SubAction
+     * @param s : String
+     * décrémente le nombre d'action s'il n'a pas encore atteint 0**/
+    public void subAction(String s){
+        int acc = this.ActionSpecial.get(s);
+        if (acc == 0){
+            System.out.println("Il n'y plus d'Action disponible");
+        }else {
+            acc--;
+            this.ActionSpecial.put(s,acc);
+        }
     }
 
 
@@ -93,6 +119,15 @@ public class Joueur {
      * retourne l'id du joueur  **/
     public int getId() {
         return this.id;
+    }
+
+    /**getter getActionValues
+     *  @return le nombre d'action restante **/
+    public int getActionValues(String s){
+        if (! this.ActionSpecial.containsKey(s))  throw new IllegalArgumentException("Action inconnu" );
+
+        return ActionSpecial.get(s);
+
     }
 
     /**methode getter addArt

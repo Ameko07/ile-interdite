@@ -132,6 +132,7 @@ public class ControleurJoueur {
                         removed++;
                     }
                 }
+                //Potentiel bug car joueur.getClef renvoie une copie de l'atttribut donc si on modifie la copie et non l'attribut
                 joueur.getClefs().removeAll(aRetirer);
 
                 // Ajoute l'artefact et supprime de la zone
@@ -189,7 +190,7 @@ public class ControleurJoueur {
         Random rand = new Random();
 
         // du random
-        int alea = rand.nextInt(3);
+        int alea = rand.nextInt(4);
         switch (alea){
             case 0:
                 // Vérifier que la zone est ordinaire
@@ -214,9 +215,18 @@ public class ControleurJoueur {
                     System.out.println("La zone du joueur est inondée");
                 }
                 break;
-            case 2:
+            case 3:
+                Random r = new Random();
+                // on ajoute une action dans la liste du joueur
+
+                    this.joueur.addAction("Sac De Sable");
+
+                System.out.println("Le joueur a obtenue une action special : Sac de Sable " + joueur.getActionValues("Sac De Sable"));
+                break;
+            case 4:
                 System.out.println("Ne fait rien");
                 break;
+
         }
         // Mise à jour des zones
         this.ile.getGrille()[xJ][yJ] = z;
@@ -356,6 +366,30 @@ public class ControleurJoueur {
     }
 
 
+    /**Controlleur du joueur de l'action SacDeSable
+     * Réutilisation de la fonction Assecher Adjascent mais sans le calcul de position
+     * On va directmenent à l'endroit demandé
+     * **/
+    public void SacDeSable(int x, int y){
+        // ✅ Vérification des bornes
+        if (x >= 0 && x < ile.getWidth() && y >= 0 && y < ile.getHeight()) {
+            Zone cible = ile.getZone(x, y);
+            if (cible.getEtat() == Zone.Etat.inonde) {
+                cible.changeState(Zone.Etat.normal);
+                System.out.println("💧 Zone (" + x + "," + y + ") asséchée !");
+                zoneMap.get(cible).refresh();
+            } else {
+                System.out.println("❌ La zone n'est pas inondée.");
+            }
+        } else {
+            System.out.println("⛔ Zone hors de la grille.");
+        }
+
+
+
+
+    }
 
 
 }
+
