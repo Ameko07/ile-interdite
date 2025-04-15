@@ -27,6 +27,8 @@ public class Fenetre extends JFrame {
     private Musique musiqueBG;
     private Images imageBG;
     private ImagesArtefact imagesArt;
+    private JPanel panelActions;  // rends ce champ accessible globalement
+    private JButton sacSableBtn;
 
 
 
@@ -100,6 +102,7 @@ public class Fenetre extends JFrame {
         finTour.addActionListener(e -> {
             cJ.finDeTour();
             actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
+            updateBoutonsSpeciaux();
         });
         panelRight.add(finTour);
         panelRight.add(Box.createVerticalStrut(15));
@@ -150,46 +153,13 @@ public class Fenetre extends JFrame {
         panelBas.add(actionsLabel);
         panelBas.add(Box.createVerticalStrut(10));
 
-        JPanel panelActions = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        panelActions = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+
 
         panelActions.setOpaque(false);
         panelActions.setBackground(new Color(0, 0, 0, 0)); // Transparent
+        updateBoutonsSpeciaux();
 
-        JButton ass = makeButton("💧 Assécher");
-        ass.addActionListener(e -> {
-            cJ.assecherZone();
-            actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
-        });
-
-        JButton recup = makeButton("🗿 Récupérer artefact");
-        recup.addActionListener(e -> {
-            cJ.recupArtJoueur();
-            actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
-        });
-
-        JButton cle = makeButton("🔑 Chercher une clef");
-        cle.addActionListener(e -> {
-            cJ.chercherClef();
-            actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
-        });
-
-
-
-        if (this.cJ.getJoueur().getActionValues("Sac De Sable") > 0) {
-            JButton sacSable = makeActionButton("Sac de sable", () -> makeFenetreSacSable());
-            panelActions.add(sacSable);
-            panelActions.revalidate();
-            panelActions.repaint();
-        }
-
-
-
-
-        //JButton helico = makeButton("Helicoptère");
-
-        panelActions.add(ass);
-        panelActions.add(recup);
-        panelActions.add(cle);
         panelBas.add(panelActions);
         add(panelBas, BorderLayout.SOUTH);
 
@@ -317,6 +287,48 @@ public class Fenetre extends JFrame {
         miniFenetre.setVisible(true);
     }
 
+    private void updateBoutonsSpeciaux() {
+        panelActions.removeAll(); // On vide pour tout reconstruire proprement
+
+        JButton ass = makeButton("💧 Assécher");
+        ass.addActionListener(e -> {
+            cJ.assecherZone();
+            actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
+            updateBoutonsSpeciaux(); // au cas où le sac est utilisé
+        });
+
+        JButton recup = makeButton("🗿 Récupérer artefact");
+        recup.addActionListener(e -> {
+            cJ.recupArtJoueur();
+            actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
+        });
+
+        JButton cle = makeButton("🔑 Chercher une clef");
+        cle.addActionListener(e -> {
+            cJ.chercherClef();
+            actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
+        });
+
+        panelActions.add(ass);
+        panelActions.add(recup);
+        panelActions.add(cle);
+
+        // Ajouter Sac de Sable si disponible
+        if (cJ.getJoueur().getActionValues("Sac De Sable") > 0) {
+            if (sacSableBtn == null) {
+                sacSableBtn = makeActionButton("Sac de sable", () -> {
+                    makeFenetreSacSable();
+                    updateBoutonsSpeciaux(); // mise à jour après usage éventuel
+                });
+            }
+            panelActions.add(sacSableBtn);
+        } else {
+            sacSableBtn = null;
+        }
+
+        panelActions.revalidate();
+        panelActions.repaint();
+    }
     /**Fonction makeFenetre  qui affiche une fenetre avec des bouton et des input
 
      * **/
