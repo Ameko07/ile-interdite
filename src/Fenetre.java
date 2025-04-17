@@ -28,7 +28,7 @@ public class Fenetre extends JFrame {
     private Images imageBG;
     private ImagesArtefact imagesArt;
     private JPanel panelActions;  // rends ce champ accessible globalement
-    private JButton sacSableBtn;
+
 
 
 
@@ -166,7 +166,9 @@ public class Fenetre extends JFrame {
         // initiqlisqtion de la musique de fond
         musiqueBG = new Musique();
         //"C:\\Users\\mimia\\Documents\\ile-interdite\\src\\JungleMusic.WAV"
-        musiqueBG.jouerMusique("C:\\Users\\mimia\\Documents\\ile-interdite\\src\\JungleMusic.WAV");
+        //"C:\\Users\\lafat\\Université\\POGL\\ile-interdite\\src\\JungleMusic.WAV"//
+
+        musiqueBG.jouerMusique("C:\\Users\\lafat\\Université\\POGL\\ile-interdite\\src\\JungleMusic.WAV");
 
         pack();
         setMinimumSize(new Dimension(1100, 750));
@@ -258,7 +260,7 @@ public class Fenetre extends JFrame {
         JLabel messageErreur = new JLabel("");
         messageErreur.setForeground(Color.RED);
 
-        JButton valider = new JButton("Valider");
+        JButton valider = makeButton("Validé");
         valider.addActionListener(e -> {
             try {
                 int x = Integer.parseInt(inputX.getText());
@@ -267,7 +269,10 @@ public class Fenetre extends JFrame {
                 if (x >= 0 && x <= 5 && y >= 0 && y <= 5) {
                     // Action à exécuter avec les coordonnées
                     cJ.SacDeSable(x,y);
+
                     System.out.println("Coordonnées valides : x=" + x + ", y=" + y);
+                    cJ.getJoueur().getActionValues("Sac De Sable");
+
                     miniFenetre.dispose(); // Fermer la mini-fenêtre
                 } else {
                     messageErreur.setText("Coordonnées invalides !");
@@ -288,7 +293,55 @@ public class Fenetre extends JFrame {
         miniFenetre.setVisible(true);
     }
 
-    private void updateBoutonsSpeciaux() {
+    /**Fonction makeFenetre  qui affiche une fenetre avec des bouton et des input
+
+     * **/
+    public void makeFenetreHelico() {
+     JDialog miniFenetre = new JDialog(this, "Helicoptère", true);
+     miniFenetre.setLayout(new GridLayout(4, 2, 10, 10));
+     miniFenetre.setSize(300, 200);
+     miniFenetre.setLocationRelativeTo(this);
+
+     JLabel labelX = new JLabel("Coordonnée X (0-5) :");
+     JTextField inputX = new JTextField();
+
+     JLabel labelY = new JLabel("Coordonnée Y (0-5) :");
+     JTextField inputY = new JTextField();
+
+     JLabel messageErreur = new JLabel("");
+     messageErreur.setForeground(Color.RED);
+
+     JButton valider = new JButton("Valider");
+     valider.addActionListener(e -> {
+     try {
+     int x = Integer.parseInt(inputX.getText());
+     int y = Integer.parseInt(inputY.getText());
+
+     if (x >= 0 && x <= 5 && y >= 0 && y <= 5) {
+     // Action à exécuter avec les coordonnées
+     cJ.helicopter(x,y);
+     System.out.println("Coordonnées valides : x=" + x + ", y=" + y);
+     miniFenetre.dispose(); // Fermer la mini-fenêtre
+     } else {
+     messageErreur.setText("Coordonnées invalides !");
+     }
+     } catch (NumberFormatException ex) {
+     messageErreur.setText("Veuillez entrer des nombres valides !");
+     }
+     });
+
+     miniFenetre.add(labelX);
+     miniFenetre.add(inputX);
+     miniFenetre.add(labelY);
+     miniFenetre.add(inputY);
+     miniFenetre.add(new JLabel());  // espace vide
+     miniFenetre.add(valider);
+     miniFenetre.add(messageErreur);
+
+     miniFenetre.setVisible(true);
+     }
+
+    public void updateBoutonsSpeciaux() {
         panelActions.removeAll(); // On vide pour tout reconstruire proprement
 
         JButton ass = makeButton("💧 Assécher");
@@ -315,73 +368,24 @@ public class Fenetre extends JFrame {
         panelActions.add(cle);
 
         // Ajouter Sac de Sable si disponible
-        if (cJ.getJoueur().getActionValues("Sac De Sable") > 0) {
-            if (sacSableBtn == null) {
-                sacSableBtn = makeActionButton("Sac de sable", () -> {
-                    makeFenetreSacSable();
-                    updateBoutonsSpeciaux(); // mise à jour après usage éventuel
-                });
-            }
-            panelActions.add(sacSableBtn);
-        } else {
-            sacSableBtn = null;
-        }
+        JButton sacSableBtn = makeButton("Sac de sable");
+        sacSableBtn.addActionListener(e-> {
+            makeFenetreSacSable();
+            updateBoutonsSpeciaux(); // mise à jour après usage éventuel
+        });
+        sacSableBtn.setEnabled(cJ.getJoueur().getActionValues("Sac De Sable") > 0);
+        panelActions.add(sacSableBtn);
 
-        panelActions.revalidate();
-        panelActions.repaint();
+
 
         JButton donnerCleBtn = makeButton(" Donner une clé");
         donnerCleBtn.addActionListener(e -> makeFenetreDonnerCle());
         panelActions.add(donnerCleBtn);
+        panelActions.revalidate();
+        panelActions.repaint();
 
     }
-    /**Fonction makeFenetre  qui affiche une fenetre avec des bouton et des input
 
-     * **/
-    /**private void makeFenetreHelico() {
-        JDialog miniFenetre = new JDialog(this, "Helicoptère", true);
-        miniFenetre.setLayout(new GridLayout(4, 2, 10, 10));
-        miniFenetre.setSize(300, 200);
-        miniFenetre.setLocationRelativeTo(this);
-
-        JLabel labelX = new JLabel("Coordonnée X (0-5) :");
-        JTextField inputX = new JTextField();
-
-        JLabel labelY = new JLabel("Coordonnée Y (0-5) :");
-        JTextField inputY = new JTextField();
-
-        JLabel messageErreur = new JLabel("");
-        messageErreur.setForeground(Color.RED);
-
-        JButton valider = new JButton("Valider");
-        valider.addActionListener(e -> {
-            try {
-                int x = Integer.parseInt(inputX.getText());
-                int y = Integer.parseInt(inputY.getText());
-
-                if (x >= 0 && x <= 5 && y >= 0 && y <= 5) {
-                    // Action à exécuter avec les coordonnées
-                    cj.helicopter(x,y);
-                    System.out.println("Coordonnées valides : x=" + x + ", y=" + y);
-                    miniFenetre.dispose(); // Fermer la mini-fenêtre
-                } else {
-                    messageErreur.setText("Coordonnées invalides !");
-                }
-            } catch (NumberFormatException ex) {
-                messageErreur.setText("Veuillez entrer des nombres valides !");
-            }
-        });
-
-        miniFenetre.add(labelX);
-        miniFenetre.add(inputX);
-        miniFenetre.add(labelY);
-        miniFenetre.add(inputY);
-        miniFenetre.add(new JLabel());  // espace vide
-        miniFenetre.add(valider);
-        miniFenetre.add(messageErreur);
-
-        miniFenetre.setVisible(true);
-    }**/
     private void makeFenetreDonnerCle() {
         JDialog mini = new JDialog(this, "Donner une clé", true);
         mini.setLayout(new GridLayout(4, 2, 10, 10));
