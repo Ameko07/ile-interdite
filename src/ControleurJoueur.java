@@ -371,23 +371,36 @@ public class ControleurJoueur {
      * On va directmenent à l'endroit demandé
      * **/
     public void SacDeSable(int x, int y){
-        // ✅ Vérification des bornes
+        //  Vérification des bornes
         if (x >= 0 && x < ile.getWidth() && y >= 0 && y < ile.getHeight()) {
             Zone cible = ile.getZone(x, y);
             if (cible.getEtat() == Zone.Etat.inonde) {
                 cible.changeState(Zone.Etat.normal);
-                System.out.println("💧 Zone (" + x + "," + y + ") asséchée !");
+                System.out.println(" Zone (" + x + "," + y + ") asséchée !");
                 zoneMap.get(cible).refresh();
             } else {
-                System.out.println("❌ La zone n'est pas inondée.");
+                System.out.println(" La zone n'est pas inondée.");
             }
         } else {
-            System.out.println("⛔ Zone hors de la grille.");
+            System.out.println(" Zone hors de la grille.");
         }
 
+    }
+    public void donnerCle(Joueur receveur, Clef clef) {
+        // Vérifie que les joueurs sont sur la même case
+        if (joueur.getX() == receveur.getX() && joueur.getY() == receveur.getY()) {
+            if (joueur.possedeClef(clef)) {
+                if (!consommerAction()) return;
 
-
-
+                joueur.removeClef(clef);
+                receveur.addClef(clef);
+                System.out.println(" Clé " + clef.getCleElem() + " donnée au joueur " + (receveur.getId() + 1));
+            } else {
+                System.out.println("Tu ne possèdes pas cette clé !");
+            }
+        } else {
+            System.out.println(" Les joueurs ne sont pas sur la même case !");
+        }
     }
 
 

@@ -165,7 +165,8 @@ public class Fenetre extends JFrame {
 
         // initiqlisqtion de la musique de fond
         musiqueBG = new Musique();
-        musiqueBG.jouerMusique("C:\\Users\\lafat\\Université\\POGL\\ile-interdite\\src\\JungleMusic.WAV");
+        //"C:\\Users\\mimia\\Documents\\ile-interdite\\src\\JungleMusic.WAV"
+        musiqueBG.jouerMusique("C:\\Users\\mimia\\Documents\\ile-interdite\\src\\JungleMusic.WAV");
 
         pack();
         setMinimumSize(new Dimension(1100, 750));
@@ -328,6 +329,11 @@ public class Fenetre extends JFrame {
 
         panelActions.revalidate();
         panelActions.repaint();
+
+        JButton donnerCleBtn = makeButton(" Donner une clé");
+        donnerCleBtn.addActionListener(e -> makeFenetreDonnerCle());
+        panelActions.add(donnerCleBtn);
+
     }
     /**Fonction makeFenetre  qui affiche une fenetre avec des bouton et des input
 
@@ -376,8 +382,43 @@ public class Fenetre extends JFrame {
 
         miniFenetre.setVisible(true);
     }**/
+    private void makeFenetreDonnerCle() {
+        JDialog mini = new JDialog(this, "Donner une clé", true);
+        mini.setLayout(new GridLayout(4, 2, 10, 10));
+        mini.setSize(400, 250);
+        mini.setLocationRelativeTo(this);
 
+        JLabel labelCle = new JLabel("Choisir une clé :");
+        JComboBox<Clef> comboCle = new JComboBox<>(cJ.getJoueur().getClefs().toArray(new Clef[0]));
 
+        JLabel labelJoueur = new JLabel("À quel joueur ?");
+        JComboBox<Joueur> comboJoueur = new JComboBox<>();
+        for (Joueur j : joueurs) {
+            if (j != cJ.getJoueur() && j.getX() == cJ.getJoueur().getX() && j.getY() == cJ.getJoueur().getY()) {
+                comboJoueur.addItem(j);
+            }
+        }
+
+        JButton valider = new JButton("Donner");
+        valider.addActionListener(e -> {
+            Clef selectedCle = (Clef) comboCle.getSelectedItem();
+            Joueur receveur = (Joueur) comboJoueur.getSelectedItem();
+            if (selectedCle != null && receveur != null) {
+                cJ.donnerCle(receveur, selectedCle);
+                updateBoutonsSpeciaux();
+                mini.dispose();
+            }
+        });
+
+        mini.add(labelCle);
+        mini.add(comboCle);
+        mini.add(labelJoueur);
+        mini.add(comboJoueur);
+        mini.add(new JLabel());
+        mini.add(valider);
+
+        mini.setVisible(true);
+    }
 
 }
 
