@@ -34,13 +34,6 @@ public class Joueur {
         this.id = id;
     }
 
-    /**setter addClef
-     * @param c : Clef
-     * ajoute une clé récupéré dans la liste du joueur **/
-    public void addClef(Clef c){
-        this.clefs.add(c);
-
-    }
     /**setter setPosition
      * @param x : int
      * @param y : int
@@ -48,6 +41,31 @@ public class Joueur {
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+
+    /**setter addClef
+     * @param c : Clef
+     * ajoute une clé récupéré dans la liste du joueur **/
+    public void addClef(Clef c){
+        this.clefs.add(c);
+
+    }
+
+    public void removeClef(Clef clef){
+        for (int i = 0; i < clefs.size(); i++) {
+            if (clefs.get(i).getCleElem().equals(clef.getCleElem())) {
+                clefs.remove(i);
+                break; // on enlève une seule clef
+            }
+        }
+    }
+
+    /**methode getter addArt
+     * @param art : Artefact
+     * Ajoute une Artefacte récupéré par le joueur **/
+    public void addArt(Artefact art){
+        this.art.add(art);
     }
 
     /**Setter addAction
@@ -73,12 +91,7 @@ public class Joueur {
 
 
     //GETTER
-    /**getter getClefs
-     * @return clefs : ArrayList
-     * récupère le tableau des clefs que possède le joueur **/
-    public ArrayList<Clef> getClefs() {
-        return clefs;
-    }
+
 
     /**getter nbClefs
      * @return nbcl
@@ -87,6 +100,14 @@ public class Joueur {
         return this.clefs.size();
     }
 
+    /**getter nbArts
+     * @return nb artefact
+     * donne le nombre d'artefacts possédé**/
+    public int nbArts(){
+        return art.size();
+    }
+
+
     /**getter getArt
      * @return art : ArrayList
      * récupère le tableau d'artefact possédé par le joueur **/
@@ -94,14 +115,6 @@ public class Joueur {
         return art;
     }
 
-
-
-    /**getter nbArts
-     * @return nb artefact
-     * donne le nombre d'artefacts possédé**/
-    public int nbArts(){
-        return art.size();
-    }
 
     /**getter getX
      * @return x **/
@@ -121,6 +134,13 @@ public class Joueur {
         return this.id;
     }
 
+    /**getter getClefs
+     * @return clefs : ArrayList
+     * récupère le tableau des clefs que possède le joueur **/
+    public ArrayList<Clef> getClefs() {
+        return clefs;
+    }
+
     /**getter getActionValues
      *  @return le nombre d'action restante **/
     public int getActionValues(String s){
@@ -130,12 +150,7 @@ public class Joueur {
 
     }
 
-    /**methode getter addArt
-     * @param art : Artefact
-     * Ajoute une Artefacte récupéré par le joueur **/
-    public void addArt(Artefact art){
-        this.art.add(art);
-    }
+
 
     /**methode possedeClef
      * @param clef : Clef
@@ -156,14 +171,7 @@ public class Joueur {
                 " nombre artefact = " + nbArts() ;
     }
 
-    public void removeClef(Clef clef){
-        for (int i = 0; i < clefs.size(); i++) {
-            if (clefs.get(i).getCleElem().equals(clef.getCleElem())) {
-                clefs.remove(i);
-                break; // on enlève une seule clef
-            }
-        }
-    }
+
 
 
 

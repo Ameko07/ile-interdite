@@ -15,17 +15,14 @@ class Artefact {
         element = e;
 
     }
+
+    // -------------getter------------------
+
     /**getter getType
      * @return element : Element **/
     public Element getType(){
         return element;
     }
-
-    @Override
-    public String toString() {
-        return "Artefact de type element"+ element; // j'ai ajouté element ici
-    }
-
 
     // pour le teste
 
@@ -39,5 +36,10 @@ class Artefact {
     @Override
     public int hashCode() {
         return Objects.hashCode(element);
+    }
+
+    @Override
+    public String toString() {
+        return "Artefact de type element"+ element; // j'ai ajouté element ici
     }
 }

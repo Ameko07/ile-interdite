@@ -35,13 +35,23 @@ public class ZonePanel extends JPanel {
 
 
 
-
+        // initiaisation d'images d'artefact
         imgArt = new ImagesArtefact();
         imgArt.setOpaque(false);
         imgArt.setBackground(new Color(0, 0, 0, 0)); // Transparent
         add(imgArt, BorderLayout.CENTER);
 
     }
+
+    /**setter setJoueur
+     * @param j : Joueur
+     * Modifie l'attribut du joueur **/
+    public void setJoueur(Joueur j) {
+        this.joueur = j;
+    }
+
+
+
 
     /**methode updateColor
      * Change la couleur des zone en fonction de leur type et de leur Etat**/
@@ -87,14 +97,6 @@ public class ZonePanel extends JPanel {
         }
 
     }
-
-    /**setter setJoueur
-     * @param j : Joueur
-     * Modifie l'attribut du joueur **/
-    public void setJoueur(Joueur j) {
-        this.joueur = j;
-    }
-
     /**methode refresh
      * met à jour les couleur et les attributs des zones**/
     public void refresh() {
@@ -103,5 +105,6 @@ public class ZonePanel extends JPanel {
 
         repaint();
     }
+
 
 }

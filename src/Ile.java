@@ -6,10 +6,8 @@ public class Ile {
 
     // Constantes de taille
     final int width = 6, height = 6;
-
     // Grille de zones
     private Zone[][] grille;
-
     // Nombre de zones héliport
     private int nbEliport = 2;
 
@@ -45,65 +43,18 @@ public class Ile {
             int x = rand.nextInt(width);
             int y = rand.nextInt(height);
 
-            // On cherche une zone ordinaire uniquement
+            // On cherche une zone ordinaire uniquement dans la grille
             while (!(grille[x][y] instanceof ZoneOrdinaire)) {
                 x = rand.nextInt(width);
                 y = rand.nextInt(height);
             }
 
+            // puis on place les Zone Eliport dans la grille
             ZoneEliport zEli = new ZoneEliport();
             zEli.setPosition(x, y);
             grille[x][y] = zEli;
         }
     }
-
-    /**
-     * Méthode utilitaire pour placer une ZoneElement aléatoirement,
-     * sans écraser une autre zone spéciale
-     */
-    private void placerZoneElement(Artefact artefact, Random rand) {
-        int x = rand.nextInt(width);
-        int y = rand.nextInt(height);
-
-        // Ne pas remplacer une zone déjà spéciale
-        while (!(grille[x][y] instanceof ZoneOrdinaire)) {
-            x = rand.nextInt(width);
-            y = rand.nextInt(height);
-        }
-
-        ZoneElement zoneElem = new ZoneElement(artefact.getType());
-        zoneElem.setPosition(x, y);
-        zoneElem.setArt(artefact); // Si tu veux associer l'artefact visuellement
-        grille[x][y] = zoneElem;
-    }
-
-    /**Methode placerClef
-     * @param clem : Clef
-     * @param rand : random
-     * affecte des coordonnées à une clé pour pouvoir le placer sur l'île **/
-    private void placerClef(Clef clem , Random rand){
-
-        //coordonnée aléatoire
-        int x = rand.nextInt(width);
-        int y = rand.nextInt(height);
-
-        // ne marche que si on tombe sur une ZoneOrdinaire
-
-
-        while (!(grille[x][y] instanceof ZoneOrdinaire)) {
-            x = rand.nextInt(width);
-            y = rand.nextInt(height);
-        }
-        //récupération de la zonne choisi
-        Zone z = this.grille[x][y];
-        if (! (((ZoneOrdinaire)z).thereIsClef() )) {
-            ((ZoneOrdinaire) z).addCle(clem);
-        }
-        this.grille[x][y] = z;
-        System.out.println("La clef  de type  " + clem.getCleElem() + " x = " + x + " y = " + y  );
-
-    }
-
 
     // === GETTERS ===
 
@@ -123,6 +74,9 @@ public class Ile {
         return grille[i][j];
     }
 
+
+    // ======== SETTER ===============
+
     /***setEtatZone
      * @param i : int
      * @param j : int
@@ -140,11 +94,66 @@ public class Ile {
      * @param j : int
      * *supprime l'artefact de la zone à l'emplacement i,j*/
     public void deletArtZone(int i, int j){
+        // on extrait la zone ne question
         Zone z = getZone(i,j);
-        if (z instanceof ZoneElement){
+
+        // on l'identifie et on vérifie la présence d'Artefacte
+        if (z instanceof ZoneElement && ((ZoneElement) z).thereIsArtefact()){
             ((ZoneElement) z).deletArt();
         }
+
+        // on réinsère la zone dans la grille
         this.grille[i][j] = z;
     }
+
+
+    /**
+     * Méthode utilitaire pour placer une ZoneElement aléatoirement,
+     * sans écraser une autre zone spéciale
+     * @param artefact : Artefact
+     * @param rand : Random
+     */
+    private void placerZoneElement(Artefact artefact, Random rand) {
+        int x = rand.nextInt(width);
+        int y = rand.nextInt(height);
+
+        // choix de la zone
+        while (!(grille[x][y] instanceof ZoneOrdinaire)) {
+            x = rand.nextInt(width);
+            y = rand.nextInt(height);
+        }
+
+        // placement de la zone dans la grille
+        ZoneElement zoneElem = new ZoneElement(artefact.getType());
+        zoneElem.setPosition(x, y);
+        zoneElem.setArt(artefact);
+        grille[x][y] = zoneElem;
+    }
+
+    /**Methode placerClef
+     * @param clem : Clef
+     * @param rand : random
+     * affecte des coordonnées à une clé pour pouvoir le placer sur l'île **/
+    private void placerClef(Clef clem , Random rand){
+
+        //coordonnée aléatoire
+        int x = rand.nextInt(width);
+        int y = rand.nextInt(height);
+
+        // ne marche que si on tombe sur une ZoneOrdinaire
+        while (!(grille[x][y] instanceof ZoneOrdinaire)) {
+            x = rand.nextInt(width);
+            y = rand.nextInt(height);
+        }
+        //récupération de la zonne choisi
+        Zone z = this.grille[x][y];
+        if (! (((ZoneOrdinaire)z).thereIsClef() )) {
+            ((ZoneOrdinaire) z).addCle(clem);
+        }
+        this.grille[x][y] = z;
+        System.out.println("La clef  de type  " + clem.getCleElem() + " x = " + x + " y = " + y  );
+
+    }
+
 }
 

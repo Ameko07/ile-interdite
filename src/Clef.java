@@ -13,10 +13,7 @@ public class Clef {
 
 
 
-    @Override
-    public String toString() {
-        return "Clef de type " + cleElem ;
-    }
+
 
     // création de IntellIJ pour les testes
     @Override
@@ -24,6 +21,11 @@ public class Clef {
         if (o == null || getClass() != o.getClass()) return false;
         Clef clef = (Clef) o;
         return cleElem == clef.cleElem;
+    }
+
+    @Override
+    public String toString() {
+        return "Clef de type " + cleElem ;
     }
 
     /*@Override

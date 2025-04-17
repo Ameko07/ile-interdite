@@ -7,7 +7,9 @@ public class TestArtefact {
     @Test
     public void testGetType(){
         Artefact art = new Artefact(Artefact.Element.EAU);
+        Artefact art2 = new Artefact(Artefact.Element.FEU);
         assertEquals(Artefact.Element.EAU, art.getType());
+        assertNotEquals(art,art2);
     }
 
 
