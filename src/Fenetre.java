@@ -1,7 +1,8 @@
 // Imports Swing (interface graphique)
 import javax.swing.*;
 import java.awt.*;
-
+import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
 
 // Imports graphiques spécifiques (au lieu d'import java.awt.*;)
 
@@ -107,15 +108,7 @@ public class Fenetre extends JFrame {
         panelRight.add(finTour);
         panelRight.add(Box.createVerticalStrut(15));
 
-        // Déplacements
-        panelRight.add(new JLabel("Déplacements", SwingConstants.CENTER));
-        panelRight.add(Box.createVerticalStrut(10));
-        panelRight.add(buildCrossPanel(
-                makeActionButton("↑", () -> deplacer(-1, 0)),
-                makeActionButton("↓", () -> deplacer(1, 0)),
-                makeActionButton("←", () -> deplacer(0, -1)),
-                makeActionButton("→", () -> deplacer(0, 1))
-        ));
+
         panelRight.add(Box.createVerticalStrut(25));
 
         // Assèchement
@@ -173,6 +166,9 @@ public class Fenetre extends JFrame {
         pack();
         setMinimumSize(new Dimension(1100, 750));
         setLocationRelativeTo(null); // centre écran
+        setupKeyBindings();
+        this.setFocusable(true);
+        this.requestFocusInWindow();
         setVisible(true);
 
     }
@@ -423,6 +419,48 @@ public class Fenetre extends JFrame {
 
         mini.setVisible(true);
     }
+
+    private void setupKeyBindings() {
+        InputMap im = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = getRootPane().getActionMap();
+
+        im.put(KeyStroke.getKeyStroke("UP"), "moveUp");
+        im.put(KeyStroke.getKeyStroke("DOWN"), "moveDown");
+        im.put(KeyStroke.getKeyStroke("LEFT"), "moveLeft");
+        im.put(KeyStroke.getKeyStroke("RIGHT"), "moveRight");
+
+        // Optionnel : WASD version
+        im.put(KeyStroke.getKeyStroke('W'), "moveUp");
+        im.put(KeyStroke.getKeyStroke('S'), "moveDown");
+        im.put(KeyStroke.getKeyStroke('A'), "moveLeft");
+        im.put(KeyStroke.getKeyStroke('D'), "moveRight");
+
+        am.put("moveUp", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deplacer(-1, 0);
+            }
+        });
+        am.put("moveDown", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deplacer(1, 0);
+            }
+        });
+        am.put("moveLeft", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deplacer(0, -1);
+            }
+        });
+        am.put("moveRight", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deplacer(0, 1);
+            }
+        });
+    }
+
 
 }
 
