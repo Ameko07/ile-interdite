@@ -1,19 +1,26 @@
+// Imports Swing (interface graphique)
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
+
+// Imports graphiques spécifiques (au lieu d'import java.awt.*;)
 
 // Imports des collections (List, Map, etc.)
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
 
-
+// Classe principale de la fenêtre du jeu, hérite de JFrame
 public class Fenetre extends JFrame {
 
     private Map<Zone, ZonePanel> zoneMap = new HashMap<>();
     private Ile ile;
     private Joueur joueur;
     private List<Joueur> joueurs = new ArrayList<>();
+    private int joueurActif = 0;
     private JLabel joueurLabel;
     private JLabel actionsLabel;
     private ControleurJoueur cJ;
@@ -25,7 +32,6 @@ public class Fenetre extends JFrame {
 
 
 
-    /**Constructeur de la classe fenetre**/
 
     public Fenetre() {
         setTitle("🌊 Île Interdite");
@@ -34,12 +40,15 @@ public class Fenetre extends JFrame {
         getContentPane().setBackground(new Color(235, 245, 255));
 
 
-        //initialisation des images
+        //initialisation des image
         imageBG =  new Images("src/JungleImageBG.JPG");
         imageBG.setLayout(new BorderLayout()); // Permet d'ajouter d'autres composants
         setContentPane(imageBG);
 
-        // ==== Initialisation des attributs utiles ====
+
+
+
+        // ==== Initialisation logique ====
         ile = new Ile();
         for (int i = 0; i < 4; i++) {
             Joueur j = new Joueur(ile.getWidth(), ile.getHeight());
@@ -66,6 +75,7 @@ public class Fenetre extends JFrame {
 
         cJ = new ControleurJoueur(ile, joueur, zoneMap, joueurs, joueurLabel, this);
 
+
         // ==== Panel Grille ====
         JPanel gridPanel = new JPanel(new GridLayout(ile.getWidth(), ile.getHeight(), 3, 3));
         gridPanel.setBackground(new Color(210, 230, 250));
@@ -89,7 +99,6 @@ public class Fenetre extends JFrame {
         //panelRight.setBackground(new Color(245, 250, 255));
         panelRight.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // ==============BOUTON FIn de Tour ============
         JButton finTour = makeButton("✅ Fin de tour");
         finTour.addActionListener(e -> {
             cJ.finDeTour();
@@ -99,15 +108,7 @@ public class Fenetre extends JFrame {
         panelRight.add(finTour);
         panelRight.add(Box.createVerticalStrut(15));
 
-        // Déplacements
-        panelRight.add(new JLabel("Déplacements", SwingConstants.CENTER));
-        panelRight.add(Box.createVerticalStrut(10));
-        panelRight.add(buildCrossPanel(
-                makeActionButton("↑", () -> deplacer(-1, 0)),
-                makeActionButton("↓", () -> deplacer(1, 0)),
-                makeActionButton("←", () -> deplacer(0, -1)),
-                makeActionButton("→", () -> deplacer(0, 1))
-        ));
+
         panelRight.add(Box.createVerticalStrut(25));
 
         // Assèchement
@@ -155,9 +156,8 @@ public class Fenetre extends JFrame {
         panelBas.add(panelActions);
         add(panelBas, BorderLayout.SOUTH);
 
-        // initialisation de la musique de fond
+        // initiqlisqtion de la musique de fond
         musiqueBG = new Musique();
-        // chemin de la musique depuis nos pc respective (petit bug niveau chemin locale)
         //"C:\\Users\\mimia\\Documents\\ile-interdite\\src\\JungleMusic.WAV"
         //"C:\\Users\\lafat\\Université\\POGL\\ile-interdite\\src\\JungleMusic.WAV"//
 
@@ -166,29 +166,43 @@ public class Fenetre extends JFrame {
         pack();
         setMinimumSize(new Dimension(1100, 750));
         setLocationRelativeTo(null); // centre écran
+        setupKeyBindings();
+        this.setFocusable(true);
+        this.requestFocusInWindow();
         setVisible(true);
 
     }
 
-    /**methode deplacer
-     * @param dx : int
-     * @param dy : int
-     * permet l'animation du joueur dans la fenêtre et update ses coordonnées **/
-    public void deplacer(int dx, int dy) {
+    private void deplacer(int dx, int dy) {
         cJ.deplacerJoueur(dx, dy);
         actionsLabel.setText("⚙️ Actions restantes : " + cJ.getActionsRestantes());
     }
 
+    /**Methode de création de bouton**/
+    private JButton makeButton(String text) {
+        JButton b = new JButton(text);
+        b.setPreferredSize(new Dimension(180, 40));
+        b.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        b.setBackground(new Color(220, 230, 240));
+        b.setFocusPainted(false);
+        b.setForeground(new Color(30, 30, 30));
+        return b;
+    }
 
+    /**Methode de création d'action de bouton**/
+    private JButton makeActionButton(String label, Runnable action) {
+        JButton b = new JButton(label);
+        b.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        b.setBackground(new Color(230, 255, 230));
+        b.setForeground(Color.BLACK);
+        b.setFocusPainted(false);
+        b.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        b.addActionListener(e -> action.run());
+        return b;
+    }
 
+    //METTRE DES COMMENTAIRE
 
-    /**methode buildCrossPanel
-     * @param down : JButton
-     * @param up : JButton
-     * @param left : JButton
-     *  @param right : JButton
-     *  Permet d'afficher les boutons directionnels pour le dépacement du joeur
-     *               et pour assechement adjacent**/
     private JPanel buildCrossPanel(JButton up, JButton down, JButton left, JButton right) {
         JPanel p = new JPanel(new GridLayout(2, 3, 5, 5));
         p.setOpaque(false);
@@ -203,8 +217,6 @@ public class Fenetre extends JFrame {
 
 
     /**Methode update Info
-     * @param joueurActif : int
-     * @param actionsRestantes : int
      * Met à jour les informations affché du joueur actif**/
     public void updateInfos(int joueurActif, int actionsRestantes) {
         StringBuilder sb = new StringBuilder();
@@ -227,37 +239,7 @@ public class Fenetre extends JFrame {
         infosJoueurs.setText(sb.toString());
     }
 
-    /**Methode de création de bouton makeButton()
-     * @param text : String
-     * permet de créer les bouton sur les mêmes dimensions**/
-    private JButton makeButton(String text) {
-        JButton b = new JButton(text);
-        b.setPreferredSize(new Dimension(180, 40));
-        b.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        b.setBackground(new Color(220, 230, 240));
-        b.setFocusPainted(false);
-        b.setForeground(new Color(30, 30, 30));
-        return b;
-    }
-
-    /**Methode de création d'action de bouton makeActionButton()
-     * @param label : String
-     * @param action : Runnable
-     * crée un bouton comme la méthode makeButton
-     * Mais ici, on associe directement une action **/
-    private JButton makeActionButton(String label, Runnable action) {
-        JButton b = new JButton(label);
-        b.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        b.setBackground(new Color(230, 255, 230));
-        b.setForeground(Color.BLACK);
-        b.setFocusPainted(false);
-        b.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        b.addActionListener(e -> action.run());
-        return b;
-    }
-
-    /**Fonction makeFenetreSacSable() qui affiche
-     * une fenêtre avec des boutons et des inputs pour Assecher des Zones loins du joueur actif
+    /**Fonction makeFenetre  qui affiche une fenetre avec des bouton et des input
      **/
     private void makeFenetreSacSable() {
         JDialog miniFenetre = new JDialog(this, "Sac de Sable", true);
@@ -307,9 +289,8 @@ public class Fenetre extends JFrame {
         miniFenetre.setVisible(true);
     }
 
-    /**Fonction makeFenetre() qui affiche une fenêtre avec des boutons et des inputs
-     * entrer les coordonnées pour déplacers les joueurs sur la même à une nouvelle zone
-     * et Met à jour leur données
+    /**Fonction makeFenetre  qui affiche une fenetre avec des bouton et des input
+
      * **/
     public void makeFenetreHelico() {
      JDialog miniFenetre = new JDialog(this, "Helicoptère", true);
@@ -356,48 +337,6 @@ public class Fenetre extends JFrame {
      miniFenetre.setVisible(true);
      }
 
-     /**Methode makeFenetreDonnerCle ()
-      * qui permet d'afficher une fenetre permettant au joueur de proceder aux échanges de clé **/
-    private void makeFenetreDonnerCle() {
-        JDialog mini = new JDialog(this, "Donner une clé", true);
-        mini.setLayout(new GridLayout(4, 2, 10, 10));
-        mini.setSize(400, 250);
-        mini.setLocationRelativeTo(this);
-
-        JLabel labelCle = new JLabel("Choisir une clé :");
-        JComboBox<Clef> comboCle = new JComboBox<>(cJ.getJoueur().getClefs().toArray(new Clef[0]));
-
-        JLabel labelJoueur = new JLabel("À quel joueur ?");
-        JComboBox<Joueur> comboJoueur = new JComboBox<>();
-        for (Joueur j : joueurs) {
-            if (j != cJ.getJoueur() && j.getX() == cJ.getJoueur().getX() && j.getY() == cJ.getJoueur().getY()) {
-                comboJoueur.addItem(j);
-            }
-        }
-
-        JButton valider = new JButton("Donner");
-        valider.addActionListener(e -> {
-            Clef selectedCle = (Clef) comboCle.getSelectedItem();
-            Joueur receveur = (Joueur) comboJoueur.getSelectedItem();
-            if (selectedCle != null && receveur != null) {
-                cJ.donnerCle(receveur, selectedCle);
-                updateBoutonsSpeciaux();
-                mini.dispose();
-            }
-        });
-
-        mini.add(labelCle);
-        mini.add(comboCle);
-        mini.add(labelJoueur);
-        mini.add(comboJoueur);
-        mini.add(new JLabel());
-        mini.add(valider);
-
-        mini.setVisible(true);
-    }
-
-    /**methode updateBoutonsSpeciaux()
-     * permet de mettre à jour l'état des boutons spéciaux et du nombre d'action possible par joueur**/
     public void updateBoutonsSpeciaux() {
         panelActions.removeAll(); // On vide pour tout reconstruire proprement
 
@@ -443,6 +382,84 @@ public class Fenetre extends JFrame {
 
     }
 
+    private void makeFenetreDonnerCle() {
+        JDialog mini = new JDialog(this, "Donner une clé", true);
+        mini.setLayout(new GridLayout(4, 2, 10, 10));
+        mini.setSize(400, 250);
+        mini.setLocationRelativeTo(this);
+
+        JLabel labelCle = new JLabel("Choisir une clé :");
+        JComboBox<Clef> comboCle = new JComboBox<>(cJ.getJoueur().getClefs().toArray(new Clef[0]));
+
+        JLabel labelJoueur = new JLabel("À quel joueur ?");
+        JComboBox<Joueur> comboJoueur = new JComboBox<>();
+        for (Joueur j : joueurs) {
+            if (j != cJ.getJoueur() && j.getX() == cJ.getJoueur().getX() && j.getY() == cJ.getJoueur().getY()) {
+                comboJoueur.addItem(j);
+            }
+        }
+
+        JButton valider = new JButton("Donner");
+        valider.addActionListener(e -> {
+            Clef selectedCle = (Clef) comboCle.getSelectedItem();
+            Joueur receveur = (Joueur) comboJoueur.getSelectedItem();
+            if (selectedCle != null && receveur != null) {
+                cJ.donnerCle(receveur, selectedCle);
+                updateBoutonsSpeciaux();
+                mini.dispose();
+            }
+        });
+
+        mini.add(labelCle);
+        mini.add(comboCle);
+        mini.add(labelJoueur);
+        mini.add(comboJoueur);
+        mini.add(new JLabel());
+        mini.add(valider);
+
+        mini.setVisible(true);
+    }
+
+    private void setupKeyBindings() {
+        InputMap im = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = getRootPane().getActionMap();
+
+        im.put(KeyStroke.getKeyStroke("UP"), "moveUp");
+        im.put(KeyStroke.getKeyStroke("DOWN"), "moveDown");
+        im.put(KeyStroke.getKeyStroke("LEFT"), "moveLeft");
+        im.put(KeyStroke.getKeyStroke("RIGHT"), "moveRight");
+
+        // Optionnel : WASD version
+        im.put(KeyStroke.getKeyStroke('W'), "moveUp");
+        im.put(KeyStroke.getKeyStroke('S'), "moveDown");
+        im.put(KeyStroke.getKeyStroke('A'), "moveLeft");
+        im.put(KeyStroke.getKeyStroke('D'), "moveRight");
+
+        am.put("moveUp", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deplacer(-1, 0);
+            }
+        });
+        am.put("moveDown", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deplacer(1, 0);
+            }
+        });
+        am.put("moveLeft", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deplacer(0, -1);
+            }
+        });
+        am.put("moveRight", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deplacer(0, 1);
+            }
+        });
+    }
 
 
 }
