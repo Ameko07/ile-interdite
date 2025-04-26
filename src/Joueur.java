@@ -73,8 +73,8 @@ public class Joueur {
      * incrémente le nombre d'action disponibe**/
     public void addAction(String s){
         int acc = this.ActionSpecial.get(s);
-
-        this.ActionSpecial.put(s,acc+1);
+        acc++;
+        this.ActionSpecial.put(s,acc);
     }
     /**setter SubAction
      * @param s : String

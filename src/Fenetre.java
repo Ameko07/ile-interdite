@@ -312,10 +312,12 @@ public class Fenetre extends JFrame {
      try {
      int x = Integer.parseInt(inputX.getText());
      int y = Integer.parseInt(inputY.getText());
+     int xJoueurAct = joueur.getX();
+     int yJoueurAct = joueur.getY();
 
      if (x >= 0 && x <= 5 && y >= 0 && y <= 5) {
      // Action à exécuter avec les coordonnées
-     cJ.helicopter(x,y);
+     cJ.helicopter(xJoueurAct,yJoueurAct,x,y);
      System.out.println("Coordonnées valides : x=" + x + ", y=" + y);
      miniFenetre.dispose(); // Fermer la mini-fenêtre
      } else {
@@ -371,6 +373,15 @@ public class Fenetre extends JFrame {
         });
         sacSableBtn.setEnabled(cJ.getJoueur().getActionValues("Sac De Sable") > 0);
         panelActions.add(sacSableBtn);
+
+        //ajouter Helicopter
+        JButton helicopterBtn = makeButton("helicopter");
+        helicopterBtn.addActionListener(e -> {
+            makeFenetreHelico();
+            updateBoutonsSpeciaux();
+        });
+        helicopterBtn.setEnabled(cJ.getJoueur().getActionValues("Helicopter")>0);
+        panelActions.add(helicopterBtn);
 
 
 

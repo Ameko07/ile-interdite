@@ -215,16 +215,18 @@ public class ControleurJoueur {
                     System.out.println("La zone du joueur est inondée");
                 }
                 break;
+            case 2 :
+                this.joueur.addAction("Helicopter");
+                fenetre.updateBoutonsSpeciaux();
+                System.out.println("Le joueur a obtenue une action special : Helicopter " + joueur.getActionValues("Helicopter"));
+                break;
             case 3:
-                //Random r = new Random();
-                // on ajoute une action dans la liste du joueur
-
                     this.joueur.addAction("Sac De Sable");
                     fenetre.updateBoutonsSpeciaux();
 
                 System.out.println("Le joueur a obtenue une action special : Sac de Sable " + joueur.getActionValues("Sac De Sable"));
                 break;
-            case 4:
+            default :
                 System.out.println("Ne fait rien");
                 break;
 
@@ -241,8 +243,10 @@ public class ControleurJoueur {
 
 
     // FIN DE TOUR
-    private boolean partiePerdue = false;
+    boolean partiePerdue = false;
 
+    /**Action fin de tour
+     * qui va innondé 3 zones aléatoire et va mettre à jours les information globales. **/
     public void finDeTour() {
         inonderTroisZones();
 
@@ -276,24 +280,24 @@ public class ControleurJoueur {
 
 
 
-
-
+    //============getter===========
     public Ile getIle() {
         return ile;
     }
-
     public Joueur getJoueur() {
         return joueur;
     }
-
     public Map<Zone, ZonePanel> getZoneMap() {
         return zoneMap;
     }
-
     public int getActionsRestantes() {
         return actionsRestantes;
     }
 
+    /**action assecher Adjacente
+     * @param dx : int
+     * @param dy : int
+     * assecher une des zones autours du joueur **/
     public void assecherAdjacente(int dx, int dy) {
         if (!consommerAction()) return;
 
@@ -315,8 +319,12 @@ public class ControleurJoueur {
         }
     }
 
+    /**check victoire
+     * vérifie si es artéfacte sont bien réunis ou si es zones d'Heliport**/
     private void checkVictoire() {
         boolean tousArtefacts = true;
+
+        // vérification des artéfactes
         for (Artefact.Element elem : Artefact.Element.values()) {
             boolean present = false;
             for (Joueur j : joueurs) {
@@ -350,6 +358,8 @@ public class ControleurJoueur {
             System.exit(0);
         }
     }
+
+
     private boolean aUneZoneAdjacenteAccessible(Joueur j) {
         int[][] directions = {{-1,0},{1,0},{0,-1},{0,1}};
         for (int[] dir : directions) {
@@ -377,6 +387,7 @@ public class ControleurJoueur {
             Zone cible = ile.getZone(x, y);
             if (cible.getEtat() == Zone.Etat.inonde) {
                 cible.changeState(Zone.Etat.normal);
+                joueur.subAction("Sac De Sable");
                 System.out.println(" Zone (" + x + "," + y + ") asséchée !");
                 zoneMap.get(cible).refresh();
             } else {
@@ -388,11 +399,35 @@ public class ControleurJoueur {
         Zone zJ = this.ile.getZone(x,y);
         ZonePanel zP = zoneMap.get(zJ);
         zP.refresh();
+
     }
 
-    public void helicopter(int x, int y){
+    public void helicopter(int CurrentX, int CurrentY, int x, int y){
 
+        // ✅ Vérification que la nouvelle position est dans la grille
+        if (x >= 0 && x < ile.getWidth() && y>= 0 && y < ile.getHeight()) {
+            Zone zoneCible = ile.getZone(x, y);
 
+            // ✅ Vérifie que la zone n'est pas submergée
+            if (zoneCible.getEtat() != Zone.Etat.submerge) {
+                // 👣 Déplacer le joueur
+                for (Joueur j : joueurs){
+                    if (j.getX()== CurrentX && j.getY()==CurrentY){
+                        j.setPosition(x,y);
+                    }
+
+                }
+                joueur.subAction("Helicopter");
+                // 🔄 Rafraîchir tous les panneaux pour mettre à jour le contour vert
+                for (ZonePanel panel : zoneMap.values()) {
+                    panel.refresh();
+                }
+            } else {
+                System.out.println("⛔ Zone submergée, impossible d'y aller !");
+            }
+        } else {
+            System.out.println("⛔ Hors de la grille !");
+        }
     }
     public void donnerCle(Joueur receveur, Clef clef) {
         // Vérifie que les joueurs sont sur la même case

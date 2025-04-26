@@ -7,14 +7,10 @@ public class Clef {
         cleElem = e;
     }
 
+    // ============getter===============
     public Artefact.Element getCleElem() {
         return cleElem;
     }
-
-
-
-
-
     // création de IntellIJ pour les testes
     @Override
     public boolean equals(Object o) {
