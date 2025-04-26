@@ -29,11 +29,9 @@ public class ZonePanel extends JPanel {
         //initialisation du label
         String e = zone.toString(Zone.Etat.normal);
 
-         this.etatTxt = new JLabel(e, SwingConstants.CENTER);
+        this.etatTxt = new JLabel(e, SwingConstants.CENTER);
         setLayout(new BorderLayout()); // Permet d'ajouter le label au centre
         add(etatTxt, BorderLayout.NORTH);
-
-
 
         // initiaisation d'images d'artefact
         imgArt = new ImagesArtefact();
@@ -63,10 +61,10 @@ public class ZonePanel extends JPanel {
         //couleur par type
         if (zone instanceof ZoneElement) {
             switch (((ZoneElement) zone).getElement()) {
-                case AIR -> setBackground(Color.GRAY);
-                case EAU -> setBackground(Color.BLUE);
-                case TERRE -> setBackground (new Color(150, 101, 38));
-                case FEU -> setBackground(Color.RED);
+                case AIR -> setBackground(new Color(51, 122, 82));
+                case EAU -> setBackground(new Color(64,94,145));
+                case TERRE -> setBackground (new Color(150, 90, 44));
+                case FEU -> setBackground(new Color(255,85,0));
             }
         } else if (zone instanceof ZoneOrdinaire) {
             setBackground(Color.YELLOW);

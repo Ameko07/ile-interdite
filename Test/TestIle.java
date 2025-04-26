@@ -61,7 +61,7 @@ public class TestIle {
     }
 
     @Test
-    public void testSertEtat(){
+    public void testSetterEtat(){
         Zone[][] grille = ile.getGrille();
         Zone z = grille[0][0];
         // vérifie l'état de la Zone par défaut
@@ -87,7 +87,6 @@ public class TestIle {
                     assertEquals(null, ((ZoneElement) z).getArt(), "il ne devrait plus y avoir d'artefact dans cette zone");
                     break;
                 }
-
             }
         }
 
