@@ -18,7 +18,7 @@ public class Ile {
         // === 1. Initialisation : toutes les zones sont ordinaires ===
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                grille[i][j] = new ZoneOrdinaire();
+                grille[i][j] = new ZoneOrdinaire("");
                 grille[i][j].setPosition(i, j); // ➕ On définit leur position
             }
         }
@@ -50,7 +50,7 @@ public class Ile {
             }
 
             // puis on place les Zone Eliport dans la grille
-            ZoneEliport zEli = new ZoneEliport();
+            ZoneEliport zEli = new ZoneEliport("");
             zEli.setPosition(x, y);
             grille[x][y] = zEli;
         }
@@ -124,7 +124,7 @@ public class Ile {
         }
 
         // placement de la zone dans la grille
-        ZoneElement zoneElem = new ZoneElement(artefact.getType());
+        ZoneElement zoneElem = new ZoneElement("",artefact.getType());
         zoneElem.setPosition(x, y);
         zoneElem.setArt(artefact);
         grille[x][y] = zoneElem;

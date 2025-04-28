@@ -6,7 +6,7 @@ public class TestZone {
     // on va tester les zones un par un
     @Test
     public void testZoneOrdinaire (){
-        Zone z = new ZoneOrdinaire();
+        Zone z = new ZoneOrdinaire("");
         assertInstanceOf(ZoneOrdinaire.class, z, "c'est bien une ZoneOrdinaire ");
         assertFalse(z instanceof ZoneElement, "Ce n'est pas une zoneElement");
         assertFalse(z instanceof ZoneEliport, "C'est n'est pas une zoneEliport");
@@ -37,7 +37,7 @@ public class TestZone {
 
     @Test
     public void testZoneEliport(){
-        ZoneEliport z = new ZoneEliport();
+        ZoneEliport z = new ZoneEliport("");
 
         assertInstanceOf(ZoneEliport.class, z, "C'est une ZoneEliport");
         assertEquals(0, z.getNbJoueur(), "il n'y a pas de joueur de base" );
@@ -47,7 +47,7 @@ public class TestZone {
     @Test
     public void testZoneElement(){
 
-        ZoneElement z = new ZoneElement(Artefact.Element.EAU); // à finir
+        ZoneElement z = new ZoneElement("",Artefact.Element.EAU); // à finir
 
         assertInstanceOf(ZoneElement.class, z);
 
