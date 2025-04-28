@@ -9,40 +9,27 @@ public class Ile {
     // Grille de zones
     private Zone[][] grille;
     // Nombre de zones héliport
-
-
-
+    private int nbEliport = 2;
 
     public Ile() {
         Random rand = new Random();
         grille = new Zone[width][height];
 
         // === 1. Initialisation : toutes les zones sont ordinaires ===
-
-            for (int i = 0; i < width; i++) {
-                for (int j = 0; j < height; j++) {
-
-                        grille[i][j] = new ZoneOrdinaire("");
-                        grille[i][j].setPosition(i, j); // ➕ On définit leur position
-
-
-                }
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                grille[i][j] = new ZoneOrdinaire();
+                grille[i][j].setPosition(i, j); // ➕ On définit leur position
             }
-
+        }
 
         // === 2. Ajout des zones élémentaires (artefacts) ===
 
         // ⚠️ On évite d’écraser une case déjà utilisée
         placerZoneElement(new Artefact(Artefact.Element.EAU), rand);
-        placerZoneElement(Artefact.Element.EAU,rand);
         placerZoneElement(new Artefact(Artefact.Element.AIR), rand);
-        placerZoneElement(Artefact.Element.EAU,rand);
         placerZoneElement(new Artefact(Artefact.Element.TERRE), rand);
-        placerZoneElement(Artefact.Element.EAU,rand);
         placerZoneElement(new Artefact(Artefact.Element.FEU), rand);
-        placerZoneElement(Artefact.Element.EAU,rand);
-
-
 
         //initialisation des clef aléatoirement sur l'ile
         placerClef(new Clef(Artefact.Element.EAU),rand);
@@ -52,7 +39,7 @@ public class Ile {
 
 
         // === 3. Ajout de 2 zones Héliport ===
-
+        for (int i = 0; i < nbEliport; i++) {
             int x = rand.nextInt(width);
             int y = rand.nextInt(height);
 
@@ -63,10 +50,10 @@ public class Ile {
             }
 
             // puis on place les Zone Eliport dans la grille
-            ZoneEliport zEli = new ZoneEliport("");
+            ZoneEliport zEli = new ZoneEliport();
             zEli.setPosition(x, y);
             grille[x][y] = zEli;
-
+        }
     }
 
     // === GETTERS ===
@@ -126,8 +113,6 @@ public class Ile {
      * @param artefact : Artefact
      * @param rand : Random
      */
-
-    // à changer pour permettre d'initialiser les cartes (IMAGES)
     private void placerZoneElement(Artefact artefact, Random rand) {
         int x = rand.nextInt(width);
         int y = rand.nextInt(height);
@@ -139,28 +124,12 @@ public class Ile {
         }
 
         // placement de la zone dans la grille
-        ZoneElement zoneElem = new ZoneElement("",artefact.getType());
+        ZoneElement zoneElem = new ZoneElement(artefact.getType());
         zoneElem.setPosition(x, y);
-        if (artefact!= null) zoneElem.setArt(artefact);
+        zoneElem.setArt(artefact);
         grille[x][y] = zoneElem;
     }
 
-    // surcharge de placer ZoneElement sans artefact
-    private void placerZoneElement(Artefact.Element e, Random rand){
-        int x = rand.nextInt(width);
-        int y = rand.nextInt(height);
-
-        // choix de la zone
-        while (!(grille[x][y] instanceof ZoneOrdinaire)|| !estZoneValide(x, y)) {
-            x = rand.nextInt(width);
-            y = rand.nextInt(height);
-        }
-
-        // placement de la zone dans la grille
-        ZoneElement zoneElem = new ZoneElement("",e);
-        zoneElem.setPosition(x, y);
-        grille[x][y] = zoneElem;
-    }
     /**Methode placerClef
      * @param clem : Clef
      * @param rand : random
