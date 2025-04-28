@@ -5,6 +5,7 @@ abstract class Zone {
     // attribut
     Etat etat;
     private int x, y;
+    private String nom ;
 
     public void setPosition(int x, int y) {
         this.x = x;
@@ -12,8 +13,9 @@ abstract class Zone {
     }
     //constructor
 
-    public Zone(){
+    public Zone(String s){
         etat = Etat.normal;
+        nom = s;
 
     }
 
@@ -32,6 +34,14 @@ abstract class Zone {
      * renvoie l'état **/
     public Etat getEtat(){
         return etat;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
     }
 
     /**methode changeState
@@ -66,8 +76,8 @@ abstract class Zone {
 class ZoneOrdinaire extends Zone{
     Clef cle ;
     // constructor
-    public ZoneOrdinaire(){
-        super();
+    public ZoneOrdinaire(String s){
+        super(s);
         cle = null;
 
     }
@@ -113,8 +123,8 @@ class ZoneEliport extends Zone{
     private int nbJoueur;// permet de savoir si l'evacuation des joueur est possible
 
     // cpnstructor
-    public ZoneEliport (){
-        super();
+    public ZoneEliport (String s){
+        super(s);
         nbJoueur = 0;
     }
 
@@ -145,8 +155,8 @@ class ZoneElement extends Zone{
 
 
     // constructor
-    public ZoneElement (Artefact.Element e){
-       super();
+    public ZoneElement (String s,Artefact.Element e){
+       super(s);
        element = e;
        art = null;
        artefact = false; // ne contient rien par defaut

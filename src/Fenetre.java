@@ -28,8 +28,21 @@ public class Fenetre extends JFrame {
     private Musique musiqueBG;
     private Images imageBG;
     private ImagesArtefact imagesArt;
-    private JPanel panelActions;  // rends ce champ accessible globalement
+    private JPanel panelActions;// rends ce champ accessible globalement
+    private String[] zonesNormales = {
+            "LaForetPourpre", "LaPortedArgent", "LaPorteDeBronze", "LaPorteDeCuivre",
+            "LaPorteDeFer", "LaPortedOr", "LaTourDuGuet", "LeLagonPerdu",
+            "LeMaraisBrumeux", "LePontDesAbimes", "LeRocherFantome", "LesDunesDeLIllusion",
+            "LesFalaisesDeLOubli", "LeValDuCrepuscule", "Observatoire"
+    };
+    private String[] zonesEAU= {"LePalaisDeCorail", "LePalaisDesMarees"};
+    private String [] zonesTerre = {"LeJardinDesHurlements", "LeJardinDesMurmures"};
+    private String [] zonesAir = { "LaCarverneDesOmbres", "LaCarverneDuBrasier"};
+    private String [] zoneFeu = {"LeTempleDeLaLune", "LeTempleDuSoleil"};
 
+    private String[] zoneSpeciale = {
+            "Heliport"
+    };
 
 
 
@@ -82,33 +95,79 @@ public class Fenetre extends JFrame {
         gridPanel.setOpaque(false); // ⚡ Transparent pour voir la Jungle derrière
         ;
         gridPanel.setLayout(new GridLayout(ile.getWidth(), ile.getHeight(), 3, 3));
+        int n = 0; // nombre de zone Ordinaire
+        int ea = 0; // EAU
+        int f = 0; // FEU
+        int t = 0; //TERRE
+        int a = 0; //AIR
 
-        for (int i = 0; i < ile.getWidth(); i++) {
-            for (int j = 0; j < ile.getHeight(); j++) {
-                Zone z = ile.getZone(i, j);
 
-                // Définir où il n'y a PAS de cases actives
-                boolean isEmpty =
-                        (i == 0 && (j == 0 || j == 1 || j == 4 || j == 5)) ||
-                                (i == 1 && (j == 0 || j == 5)) ||
-                                (i == 4 && (j == 0 || j == 5)) ||
-                                (i == 5 && (j == 0 || j == 1 || j == 4 || j == 5));
 
-                if (isEmpty) {
-                    // Case vide : mettre un panel vide pour respecter la grille
-                    JPanel vide = new JPanel();
-                    vide.setOpaque(false);
-                    gridPanel.add(vide);
-                } else {
-                    ZonePanel zp = new ZonePanel(z);
-                    zp.setJoueur(joueur);
-                    zp.setJoueurs(joueurs); // On donne la liste complète des joueurs
+            for (int i = 0; i < ile.getWidth(); i++) {
+                for (int j = 0; j < ile.getHeight(); j++) {
+                    Zone z = ile.getZone(i, j);
 
-                    gridPanel.add(zp);
-                    zoneMap.put(z, zp);
+                    // Définir où il n'y a PAS de cases actives
+                    boolean isEmpty =
+                            (i == 0 && (j == 0 || j == 1 || j == 4 || j == 5)) ||
+                                    (i == 1 && (j == 0 || j == 5)) ||
+                                    (i == 4 && (j == 0 || j == 5)) ||
+                                    (i == 5 && (j == 0 || j == 1 || j == 4 || j == 5));
+
+                    if (isEmpty) {
+                        // Case vide : mettre un panel vide pour respecter la grille
+                        JPanel vide = new JPanel();
+                        vide.setOpaque(false);
+                        gridPanel.add(vide);
+                    } else {
+
+                        if (z instanceof ZoneOrdinaire) {
+                            if (n < zonesNormales.length) {
+                                z.setNom(zonesNormales[n]);
+                                n++;
+                            }
+
+                        }else if (z instanceof ZoneElement){
+                            Artefact.Element el = ((ZoneElement) z).getElement();
+                            switch (el){
+                                case EAU -> {
+                                    if (ea < zonesEAU.length) {
+                                        z.setNom(zonesEAU[ea]);
+                                        ea++;
+                                    }
+                                }case FEU -> {
+                                    if (f < zoneFeu.length) {
+                                        z.setNom(zoneFeu[f]);
+                                        f++;
+                                    }
+                                }case TERRE -> {
+                                    if (t < zonesTerre.length) {
+                                        z.setNom(zonesTerre[t]);
+                                        t++;
+                                    }
+                                }case AIR -> {
+                                    if (a < zonesAir.length) {
+                                        z.setNom(zonesAir[a]);
+                                        a++;
+                                    }
+                                }
+
+                            }
+
+
+                        }
+                        ZonePanel zp = new ZonePanel(z);
+
+                        zp.setJoueur(joueur);
+                        zp.setJoueurs(joueurs); // On donne la liste complète des joueurs
+                        zp.refresh();
+                        gridPanel.add(zp);
+                        zoneMap.put(z, zp);
+                    }
+
                 }
             }
-        }
+
         zoneMap.values().forEach(ZonePanel::refresh);
         add(gridPanel, BorderLayout.CENTER);
 

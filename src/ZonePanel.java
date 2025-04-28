@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 /**c'est une classe qui va représenter une zone donnée sur la fenêtre **/
 
@@ -15,6 +16,8 @@ public class ZonePanel extends JPanel {
     private ImagesArtefact imgArt;
     private java.util.List<Joueur> joueurs;  // Liste de tous les joueurs
     private ImageIcon[] imagesPions = new ImageIcon[4]; // 4 pions
+    private Tuiles imageFond ;
+
 
 
 
@@ -47,6 +50,8 @@ public class ZonePanel extends JPanel {
         }
 
 
+
+
     }
 
     /**setter setJoueur
@@ -62,41 +67,29 @@ public class ZonePanel extends JPanel {
     }
 
 
-    /**methode updateColor
-     * Change la couleur des zone en fonction de leur type et de leur Etat**/
-    private void updateColor() {
-        // on récupère l'etat de la zone
+    private void updateFondImage() {
+        String nomZone = zone.getNom();
         Zone.Etat etat = zone.getEtat();
 
 
-        //couleur par type
-        if (zone instanceof ZoneElement) {
-            switch (((ZoneElement) zone).getElement()) {
-                case AIR -> setBackground(new Color(51, 122, 82));
-                case EAU -> setBackground(new Color(64,94,145));
-                case TERRE -> setBackground (new Color(150, 90, 44));
-                case FEU -> setBackground(new Color(255,85,0));
+        if (nomZone != "" ){
+            String chemin ="";
+            if (etat == Zone.Etat.normal){
+                 chemin = "src\\images\\tuiles\\" + nomZone + ".png";
             }
-        } else if (zone instanceof ZoneOrdinaire) {
-            setBackground(Color.YELLOW);
-        } else if (zone instanceof ZoneEliport) {
-            setBackground(Color.BLACK);
+            else if (etat == Zone.Etat.inonde){
+                chemin = "src\\images\\tuiles\\" + nomZone + "_Inonde.png";
+            }
+            imageFond = new Tuiles(chemin);
         }
 
-        // label modifier par rapport à l'état de la zone
-        switch (etat) {
-            case inonde -> etatTxt.setText(zone.toString(etat));
-            case submerge -> etatTxt.setText(zone.toString(etat));
-            default -> etatTxt.setText(zone.toString(etat));
-        }
-        // mise en couleur du texte selon l'état
-        if (etat == Zone.Etat.submerge) {
-            etatTxt.setForeground(Color.RED);
-        } else if (etat == Zone.Etat.inonde) {
-            etatTxt.setForeground(Color.BLUE);
-        } else {
-            etatTxt.setForeground(Color.BLACK);
-        }
+
+    }
+
+
+    /**methode updateColor
+     * Change la couleur des zone en fonction de leur type et de leur Etat**/
+    private void updateColor() {
 
         // Si le joueur est sur cette zone → mettre une bordure ou un indicateur
         if (joueur != null && joueur.getX() == zone.getX() && joueur.getY() == zone.getY()) {
@@ -111,13 +104,17 @@ public class ZonePanel extends JPanel {
     public void refresh() {
         imgArt.setZone(zone);
         updateColor();
-
+        updateFondImage();
         repaint();
     }
     @Override
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        if (imageFond != null && imageFond.imgTuile != null && imageFond.getImgTuile() != null) {
+            g.drawImage(this.imageFond.getImgTuile().getImage(), 0, 0, getWidth(), getHeight(), this);
+        }
 
         if (zone != null) { //
             Graphics2D g2 = (Graphics2D) g.create();

@@ -8,6 +8,10 @@ public class Images extends JPanel {
         image = new ImageIcon(imagePath).getImage();
     }
 
+    public Image getImage() {
+        return image;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

@@ -20,33 +20,36 @@ public class ImagesArtefact extends JPanel {
         super.paintComponent(g);
 
         // Dessiner l’état de la zone (ex: normale, inondée)
-        if (zone.getEtat() == Zone.Etat.inonde) {
+        /**if (zone.getEtat() == Zone.Etat.inonde) {
             g.setColor(new Color(0, 0, 255, 50)); // Bleu transparent
             g.fillRect(0, 0, getWidth(), getHeight());
         } else if (zone.getEtat() == Zone.Etat.submerge) {
             g.setColor(new Color(0, 0, 255, 120)); // Bleu foncé
             g.fillRect(0, 0, getWidth(), getHeight());
-        }
+        }**/
 
         // Dessiner l’artefact si présent
         if (zone instanceof ZoneElement) {
             Artefact a = ((ZoneElement) zone).getArt();
             ImageIcon img = null;
 
-            switch (a.getType()) {
-                case EAU:
-                    img = imgEau;
-                    break;
-                case FEU:
-                    img = imgFeu;
-                    break;
-                case TERRE:
-                    img = imgTerre;
-                    break;
-                case AIR:
-                    img = imgAir;
-                    break;
+            if (a!=null){
+                switch (a.getType()) {
+                    case EAU:
+                        img = imgEau;
+                        break;
+                    case FEU:
+                        img = imgFeu;
+                        break;
+                    case TERRE:
+                        img = imgTerre;
+                        break;
+                    case AIR:
+                        img = imgAir;
+                        break;
+                }
             }
+
 
             if (img != null) {
                 g.drawImage(img.getImage(), getWidth() / 4, getHeight() / 4, getWidth() / 2, getHeight() / 2, this);
