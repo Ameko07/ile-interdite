@@ -25,17 +25,11 @@ public class Ile {
 
         // === 2. Ajout des zones élémentaires (artefacts) ===
 
-        // ⚠️ On évite d’écraser une case déjà utilisée
-        placerZoneElement(new Artefact(Artefact.Element.EAU), rand);
-        placerZoneElement(new Artefact(Artefact.Element.AIR), rand);
-        placerZoneElement(new Artefact(Artefact.Element.TERRE), rand);
-        placerZoneElement(new Artefact(Artefact.Element.FEU), rand);
-
-        //initialisation des clef aléatoirement sur l'ile
-        placerClef(new Clef(Artefact.Element.EAU),rand);
-        placerClef(new Clef(Artefact.Element.AIR),rand);
-        placerClef(new Clef(Artefact.Element.TERRE),rand);
-        placerClef(new Clef(Artefact.Element.FEU),rand);
+        // === 2. Placement contrôlé des artefacts dans les coins actifs ===
+        placerArtefactFixe(0, 1, Artefact.Element.EAU);   // Coin haut-gauche
+        placerArtefactFixe(0, 4, Artefact.Element.AIR);   // Coin haut-droit
+        placerArtefactFixe(5, 1, Artefact.Element.TERRE); // Coin bas-gauche
+        placerArtefactFixe(5, 4, Artefact.Element.FEU);   // Coin bas-droit
 
 
         // === 3. Ajout de 2 zones Héliport ===
@@ -163,6 +157,14 @@ public class Ile {
                         (i == 5 && (j == 0 || j == 1 || j == 4 || j == 5))
         );
     }
+    private void placerArtefactFixe(int x, int y, Artefact.Element type) {
+        ZoneElement zoneElem = new ZoneElement(type);
+        zoneElem.setArt(new Artefact(type));
+        zoneElem.setPosition(x, y);
+        grille[x][y] = zoneElem;
+    }
+
+
 
 
 }

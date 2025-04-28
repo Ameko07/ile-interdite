@@ -1,5 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
+import java.util.HashMap;
+
 
 /**c'est une classe qui va représenter une zone donnée sur la fenêtre **/
 
@@ -15,6 +18,8 @@ public class ZonePanel extends JPanel {
     private ImagesArtefact imgArt;
     private java.util.List<Joueur> joueurs;  // Liste de tous les joueurs
     private ImageIcon[] imagesPions = new ImageIcon[4]; // 4 pions
+    private Map<Artefact.Element, Image> imagesArtefacts = new HashMap<>();
+
 
 
 
@@ -22,31 +27,32 @@ public class ZonePanel extends JPanel {
     public ZonePanel(Zone z) {
         this.zone = z;
         updateColor();
-        setLayout(new BorderLayout());  // Permet d'ajouter des composants
+        setLayout(new BorderLayout());
 
-        // Création de l'écouteur avant de l'ajouter
+        // 🔵 Charger les images des artefacts UNE FOIS
+        imagesArtefacts.put(Artefact.Element.EAU, new ImageIcon(getClass().getResource("/images/cristal.png")).getImage());
+        imagesArtefacts.put(Artefact.Element.FEU, new ImageIcon(getClass().getResource("/images/calice.png")).getImage());
+        imagesArtefacts.put(Artefact.Element.TERRE, new ImageIcon(getClass().getResource("src/images/pierre.png")).getImage());
+        imagesArtefacts.put(Artefact.Element.AIR, new ImageIcon(getClass().getResource("src/images/zephyr.png")).getImage());
 
-        ZoneMouse mouseListener = new ZoneMouse(zone) ;
-        // Ajout du MouseListener à  JPanel
-        addMouseListener(mouseListener);
 
-        //initialisation du label
-        String e = zone.toString(Zone.Etat.normal);
 
-        this.etatTxt = new JLabel(e, SwingConstants.CENTER);
-        setLayout(new BorderLayout()); // Permet d'ajouter le label au centre
-        add(etatTxt, BorderLayout.NORTH);
-
-        // initiaisation d'images d'artefact
-        imgArt = new ImagesArtefact();
-        imgArt.setOpaque(false);
-        imgArt.setBackground(new Color(0, 0, 0, 0)); // Transparent
-        add(imgArt, BorderLayout.CENTER);
+        // 🟢 Charger les pions dans une boucle
         for (int i = 0; i < 4; i++) {
             imagesPions[i] = new ImageIcon("src/images/Pion" + (i+1) + ".png");
         }
 
+        // Le reste pareil...
+        ZoneMouse mouseListener = new ZoneMouse(zone);
+        addMouseListener(mouseListener);
 
+        this.etatTxt = new JLabel(zone.toString(Zone.Etat.normal), SwingConstants.CENTER);
+        add(etatTxt, BorderLayout.NORTH);
+
+        imgArt = new ImagesArtefact();
+        imgArt.setOpaque(false);
+        imgArt.setBackground(new Color(0, 0, 0, 0));
+        add(imgArt, BorderLayout.CENTER);
     }
 
     /**setter setJoueur
@@ -115,29 +121,36 @@ public class ZonePanel extends JPanel {
         repaint();
     }
     @Override
-
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (zone != null) { //
+        if (zone != null) {
             Graphics2D g2 = (Graphics2D) g.create();
-            g2.setColor(new Color(255, 255, 255, 90)); // Blanc transparent
+
+            // 🔵 1. D'abord afficher l'artefact s'il existe
+            if (zone instanceof ZoneElement ze) {
+                Image img = imagesArtefacts.get(ze.getElement());
+                if (img != null) {
+                    int taille = Math.min(getWidth(), getHeight()) / 2;
+                    g2.drawImage(img, (getWidth() - taille) / 2, (getHeight() - taille) / 2, taille, taille, this);
+                }
+            }
+
+            // ⚪ 2. Ensuite dessiner un fond blanc transparent par-dessus
+            g2.setColor(new Color(255, 255, 255, 90));
             g2.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 20, 20);
+
             g2.dispose();
         }
 
-
-
-
+        // 🔶 3. Enfin afficher les joueurs s'il y en a
         if (joueurs != null && zone != null) {
             Graphics2D g2 = (Graphics2D) g.create();
 
-            // Active l'anti-aliasing pour un rendu plus lisse
+            // Anti-aliasing pour rendre les pions plus beaux
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             int nbJoueursSurZone = 0;
-
-            // Compte combien de joueurs sont sur cette zone
             for (Joueur j : joueurs) {
                 if (j.getX() == zone.getX() && j.getY() == zone.getY()) {
                     nbJoueursSurZone++;
@@ -148,21 +161,18 @@ public class ZonePanel extends JPanel {
             for (Joueur j : joueurs) {
                 if (j.getX() == zone.getX() && j.getY() == zone.getY()) {
                     Image img = imagesPions[j.getId()].getImage();
-
-                    int taille = Math.min(getWidth(), getHeight()) / 2; // Taille adaptée à la case
-                    int spacing = 5; // Espace entre les pions
-
+                    int taille = Math.min(getWidth(), getHeight()) / 2;
+                    int spacing = 5;
                     int totalWidth = nbJoueursSurZone * (taille + spacing) - spacing;
                     int startX = (getWidth() - totalWidth) / 2;
-
                     int x = startX + index * (taille + spacing);
                     int y = (getHeight() - taille) / 2;
 
-                    // Ombre douce sous le pion
+                    // Ombre sous le pion
                     g2.setColor(new Color(0, 0, 0, 80));
                     g2.fillOval(x + 3, y + 3, taille, taille);
 
-                    // Dessine l'image du pion
+                    // Dessiner le pion
                     g2.drawImage(img, x, y, taille, taille, this);
 
                     index++;
@@ -172,6 +182,9 @@ public class ZonePanel extends JPanel {
             g2.dispose();
         }
     }
+
+
+
 
 
 }
