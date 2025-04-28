@@ -11,6 +11,7 @@ public class Joueur {
     ArrayList<Artefact> art; // peut avoir plusieurs artefacte
     private int id;
     HashMap<String, Integer> ActionSpecial ;
+    private String nom;
 
 
     //constructor
@@ -41,6 +42,13 @@ public class Joueur {
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getNom() {
+        return nom;
     }
 
 

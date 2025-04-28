@@ -118,7 +118,7 @@ public class Ile {
         int y = rand.nextInt(height);
 
         // choix de la zone
-        while (!(grille[x][y] instanceof ZoneOrdinaire)) {
+        while (!(grille[x][y] instanceof ZoneOrdinaire)|| !estZoneValide(x, y)) {
             x = rand.nextInt(width);
             y = rand.nextInt(height);
         }
@@ -141,7 +141,7 @@ public class Ile {
         int y = rand.nextInt(height);
 
         // ne marche que si on tombe sur une ZoneOrdinaire
-        while (!(grille[x][y] instanceof ZoneOrdinaire)) {
+        while (!(grille[x][y] instanceof ZoneOrdinaire)|| !estZoneValide(x, y)) {
             x = rand.nextInt(width);
             y = rand.nextInt(height);
         }
@@ -154,6 +154,16 @@ public class Ile {
         System.out.println("La clef  de type  " + clem.getCleElem() + " x = " + x + " y = " + y  );
 
     }
+    public boolean estZoneValide(int i, int j) {
+        // Retourne true si la case (i,j) est visible sur la carte (forme de losange)
+        return !(
+                (i == 0 && (j == 0 || j == 1 || j == 4 || j == 5)) ||
+                        (i == 1 && (j == 0 || j == 5)) ||
+                        (i == 4 && (j == 0 || j == 5)) ||
+                        (i == 5 && (j == 0 || j == 1 || j == 4 || j == 5))
+        );
+    }
+
 
 }
 
