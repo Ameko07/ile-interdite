@@ -15,18 +15,18 @@ public class ZoneMouse implements MouseListener {
     public void mouseClicked(MouseEvent e) {
 
         if (zone instanceof ZoneElement) {
-            System.out.print("Zone Element : ");
+            System.out.print("Zone Element : " + zone.getNom());
             Artefact.Element el = ((ZoneElement) zone).getElement();
             switch (el) {
-                case AIR -> System.out.println("de Type AIR");
-                case EAU -> System.out.println("de Type EAU");
-                case TERRE -> System.out.println("de Type TERRE");
-                case FEU -> System.out.println("de Type FEU");
+                case AIR -> System.out.println(" de Type AIR");
+                case EAU -> System.out.println(" de Type EAU");
+                case TERRE -> System.out.println(" de Type TERRE");
+                case FEU -> System.out.println(" de Type FEU");
 
             }
 
         } else if (zone instanceof ZoneOrdinaire) {
-            System.out.println("Zone ordinaire");
+            System.out.println("Zone ordinaire : " + zone.getNom());
             // Exemple d'action : changer de couleur en cliquant
 
         } else if (zone instanceof ZoneEliport) {

@@ -118,8 +118,8 @@ public class ZonePanel extends JPanel {
 
         if (zone != null) { //
             Graphics2D g2 = (Graphics2D) g.create();
-            g2.setColor(new Color(255, 255, 255, 90)); // Blanc transparent
-            g2.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 20, 20);
+            //g2.setColor(new Color(255, 255, 255, 90)); // Blanc transparent
+            //g2.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 20, 20);
             g2.dispose();
         }
 

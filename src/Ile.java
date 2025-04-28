@@ -9,7 +9,7 @@ public class Ile {
     // Grille de zones
     private Zone[][] grille;
     // Nombre de zones héliport
-    private int nbEliport = 2;
+    private int nbEliport = 1;
 
     public Ile() {
         Random rand = new Random();
@@ -27,9 +27,13 @@ public class Ile {
 
         // ⚠️ On évite d’écraser une case déjà utilisée
         placerZoneElement(new Artefact(Artefact.Element.EAU), rand);
+        placerZoneElement(Artefact.Element.EAU, rand);
         placerZoneElement(new Artefact(Artefact.Element.AIR), rand);
+        placerZoneElement(Artefact.Element.AIR, rand);
         placerZoneElement(new Artefact(Artefact.Element.TERRE), rand);
+        placerZoneElement(Artefact.Element.TERRE, rand);
         placerZoneElement(new Artefact(Artefact.Element.FEU), rand);
+        placerZoneElement(Artefact.Element.FEU, rand);
 
         //initialisation des clef aléatoirement sur l'ile
         placerClef(new Clef(Artefact.Element.EAU),rand);
@@ -38,22 +42,8 @@ public class Ile {
         placerClef(new Clef(Artefact.Element.FEU),rand);
 
 
-        // === 3. Ajout de 2 zones Héliport ===
-        for (int i = 0; i < nbEliport; i++) {
-            int x = rand.nextInt(width);
-            int y = rand.nextInt(height);
-
-            // On cherche une zone ordinaire uniquement dans la grille
-            while (!(grille[x][y] instanceof ZoneOrdinaire)) {
-                x = rand.nextInt(width);
-                y = rand.nextInt(height);
-            }
-
-            // puis on place les Zone Eliport dans la grille
-            ZoneEliport zEli = new ZoneEliport("");
-            zEli.setPosition(x, y);
-            grille[x][y] = zEli;
-        }
+        // === 3. Ajout de la zone Héliport ===
+        placerZoneEliport(rand);
     }
 
     // === GETTERS ===
@@ -128,6 +118,41 @@ public class Ile {
         zoneElem.setPosition(x, y);
         zoneElem.setArt(artefact);
         grille[x][y] = zoneElem;
+    }
+
+    // SURCHARGE
+    private void placerZoneElement(Artefact.Element el, Random rand){
+        int x = rand.nextInt(width);
+        int y = rand.nextInt(height);
+
+        // choix de la zone
+        while (!(grille[x][y] instanceof ZoneOrdinaire)|| !estZoneValide(x, y)) {
+            x = rand.nextInt(width);
+            y = rand.nextInt(height);
+        }
+
+        // placement de la zone dans la grille
+        ZoneElement zoneElem = new ZoneElement("",el);
+        zoneElem.setPosition(x, y);
+        grille[x][y] = zoneElem;
+
+    }
+    private void placerZoneEliport(Random rand){
+
+            int x = rand.nextInt(width);
+            int y = rand.nextInt(height);
+
+            // On cherche une zone ordinaire uniquement dans la grille
+            while (!(grille[x][y] instanceof ZoneOrdinaire) || !estZoneValide(x, y)) {
+                x = rand.nextInt(width);
+                y = rand.nextInt(height);
+            }
+
+            // puis on place les Zone Eliport dans la grille
+            ZoneEliport zEli = new ZoneEliport("Heliport");
+            zEli.setPosition(x, y);
+            grille[x][y] = zEli;
+
     }
 
     /**Methode placerClef
