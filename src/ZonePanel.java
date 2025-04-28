@@ -13,6 +13,10 @@ public class ZonePanel extends JPanel {
     private Color[] couleursJoueurs = {Color.GREEN, Color.MAGENTA, Color.ORANGE, Color.CYAN};
 
     private ImagesArtefact imgArt;
+    private java.util.List<Joueur> joueurs;  // Liste de tous les joueurs
+    private ImageIcon[] imagesPions = new ImageIcon[4]; // 4 pions
+
+
 
     //Constructor
     public ZonePanel(Zone z) {
@@ -38,6 +42,10 @@ public class ZonePanel extends JPanel {
         imgArt.setOpaque(false);
         imgArt.setBackground(new Color(0, 0, 0, 0)); // Transparent
         add(imgArt, BorderLayout.CENTER);
+        for (int i = 0; i < 4; i++) {
+            imagesPions[i] = new ImageIcon("src/images/Pion" + (i+1) + ".png");
+        }
+
 
     }
 
@@ -49,6 +57,9 @@ public class ZonePanel extends JPanel {
     }
 
 
+    public void setJoueurs(java.util.List<Joueur> joueurs) {
+        this.joueurs = joueurs;
+    }
 
 
     /**methode updateColor
@@ -102,6 +113,64 @@ public class ZonePanel extends JPanel {
         updateColor();
 
         repaint();
+    }
+    @Override
+
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        if (zone != null) { //
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setColor(new Color(255, 255, 255, 90)); // Blanc transparent
+            g2.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 20, 20);
+            g2.dispose();
+        }
+
+
+
+
+        if (joueurs != null && zone != null) {
+            Graphics2D g2 = (Graphics2D) g.create();
+
+            // Active l'anti-aliasing pour un rendu plus lisse
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            int nbJoueursSurZone = 0;
+
+            // Compte combien de joueurs sont sur cette zone
+            for (Joueur j : joueurs) {
+                if (j.getX() == zone.getX() && j.getY() == zone.getY()) {
+                    nbJoueursSurZone++;
+                }
+            }
+
+            int index = 0;
+            for (Joueur j : joueurs) {
+                if (j.getX() == zone.getX() && j.getY() == zone.getY()) {
+                    Image img = imagesPions[j.getId()].getImage();
+
+                    int taille = Math.min(getWidth(), getHeight()) / 2; // Taille adaptée à la case
+                    int spacing = 5; // Espace entre les pions
+
+                    int totalWidth = nbJoueursSurZone * (taille + spacing) - spacing;
+                    int startX = (getWidth() - totalWidth) / 2;
+
+                    int x = startX + index * (taille + spacing);
+                    int y = (getHeight() - taille) / 2;
+
+                    // Ombre douce sous le pion
+                    g2.setColor(new Color(0, 0, 0, 80));
+                    g2.fillOval(x + 3, y + 3, taille, taille);
+
+                    // Dessine l'image du pion
+                    g2.drawImage(img, x, y, taille, taille, this);
+
+                    index++;
+                }
+            }
+
+            g2.dispose();
+        }
     }
 
 

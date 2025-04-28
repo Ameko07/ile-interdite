@@ -52,9 +52,10 @@ public class Fenetre extends JFrame {
         ile = new Ile();
         for (int i = 0; i < 4; i++) {
             Joueur j = new Joueur(ile.getWidth(), ile.getHeight());
-            while (ile.getZone(j.getX(), j.getY()).getEtat() == Zone.Etat.submerge) {
+            while (ile.getZone(j.getX(), j.getY()).getEtat() == Zone.Etat.submerge || !ile.estZoneValide(j.getX(), j.getY())) {
                 j = new Joueur(ile.getWidth(), ile.getHeight());
             }
+
             j.setId(i);
             joueurs.add(j);
         }
@@ -78,14 +79,34 @@ public class Fenetre extends JFrame {
 
         // ==== Panel Grille ====
         JPanel gridPanel = new JPanel(new GridLayout(ile.getWidth(), ile.getHeight(), 3, 3));
-        gridPanel.setBackground(new Color(210, 230, 250));
+        gridPanel.setOpaque(false); // ⚡ Transparent pour voir la Jungle derrière
+        ;
+        gridPanel.setLayout(new GridLayout(ile.getWidth(), ile.getHeight(), 3, 3));
+
         for (int i = 0; i < ile.getWidth(); i++) {
             for (int j = 0; j < ile.getHeight(); j++) {
                 Zone z = ile.getZone(i, j);
-                ZonePanel zp = new ZonePanel(z);
-                zp.setJoueur(joueur);
-                gridPanel.add(zp);
-                zoneMap.put(z, zp);
+
+                // Définir où il n'y a PAS de cases actives
+                boolean isEmpty =
+                        (i == 0 && (j == 0 || j == 1 || j == 4 || j == 5)) ||
+                                (i == 1 && (j == 0 || j == 5)) ||
+                                (i == 4 && (j == 0 || j == 5)) ||
+                                (i == 5 && (j == 0 || j == 1 || j == 4 || j == 5));
+
+                if (isEmpty) {
+                    // Case vide : mettre un panel vide pour respecter la grille
+                    JPanel vide = new JPanel();
+                    vide.setOpaque(false);
+                    gridPanel.add(vide);
+                } else {
+                    ZonePanel zp = new ZonePanel(z);
+                    zp.setJoueur(joueur);
+                    zp.setJoueurs(joueurs); // On donne la liste complète des joueurs
+
+                    gridPanel.add(zp);
+                    zoneMap.put(z, zp);
+                }
             }
         }
         zoneMap.values().forEach(ZonePanel::refresh);
@@ -472,6 +493,19 @@ public class Fenetre extends JFrame {
         });
     }
 
+    public class BackgroundPanel extends JPanel {
+        private Image backgroundImage;
+
+        public BackgroundPanel(String path) {
+            this.backgroundImage = new ImageIcon(path).getImage();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
+    }
 
 }
 

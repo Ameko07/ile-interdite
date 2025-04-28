@@ -152,17 +152,16 @@ public class ControleurJoueur {
 
     // ⬅️ Appelée avec dx/dy = déplacement horizontal/vertical
     public void deplacerJoueur(int dx, int dy) {
-        if (!consommerAction()) return;
         int newX = joueur.getX() + dx;
         int newY = joueur.getY() + dy;
 
-        // ✅ Vérification que la nouvelle position est dans la grille
-        if (newX >= 0 && newX < ile.getWidth() && newY >= 0 && newY < ile.getHeight()) {
+        // ✅ Vérification que la nouvelle position est dans la grille ET dans une zone valide
+        if (newX >= 0 && newX < ile.getWidth() && newY >= 0 && newY < ile.getHeight() && ile.estZoneValide(newX, newY)) {
             Zone zoneCible = ile.getZone(newX, newY);
 
             // ✅ Vérifie que la zone n'est pas submergée
             if (zoneCible.getEtat() != Zone.Etat.submerge) {
-                // 👣 Déplacer le joueur
+                if (!consommerAction()) return; // ❗ On consomme l'action SEULEMENT maintenant
                 joueur.setPosition(newX, newY);
 
                 // 🔄 Rafraîchir tous les panneaux pour mettre à jour le contour vert
@@ -173,9 +172,9 @@ public class ControleurJoueur {
                 System.out.println("⛔ Zone submergée, impossible d'y aller !");
             }
         } else {
-            System.out.println("⛔ Hors de la grille !");
+            System.out.println("⛔ Zone non valide ou hors de la grille !");
         }
-    }
+}
 
     /**Action chercherClef
      * Action à multiple possibilité
