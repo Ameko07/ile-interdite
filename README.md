@@ -52,11 +52,13 @@ Voici les prochaines évolutions envisagées pour rendre notre jeu encore plus r
 rojet développé dans le cadre du module POGL à l’Université Paris-Saclay.
 
 Réalisé par :
+
    Melina Adel
 
    Julio Lafatra Ramanankieferana
 
 Encadrants :
+
    sylvain joube
 
    Fréderic Gruau
