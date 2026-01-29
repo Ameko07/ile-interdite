@@ -344,7 +344,7 @@ public class Fenetre extends JFrame {
 
                 if (x >= 0 && x <= 5 && y >= 0 && y <= 5) {
                     // Action à exécuter avec les coordonnées
-                    cJ.SacDeSable(x,y);
+                    cJ.SacDeSable(y,x);
 
                     System.out.println("Coordonnées valides : x=" + x + ", y=" + y);
                     cJ.getJoueur().getActionValues("Sac De Sable");

@@ -36,9 +36,9 @@ public class ZonePanel extends JPanel {
         //initialisation du label
         String e = zone.toString(Zone.Etat.normal);
 
-        this.etatTxt = new JLabel(e, SwingConstants.CENTER);
+        /**this.etatTxt = new JLabel(e, SwingConstants.CENTER);
         setLayout(new BorderLayout()); // Permet d'ajouter le label au centre
-        add(etatTxt, BorderLayout.NORTH);
+        add(etatTxt, BorderLayout.NORTH);**/
 
         // initiaisation d'images d'artefact
         imgArt = new ImagesArtefact();
